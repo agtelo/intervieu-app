@@ -22,6 +22,7 @@ export default function DashboardPage() {
   const { isSignedIn, isLoaded } = useAuth();
   const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
+  const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -55,6 +56,18 @@ export default function DashboardPage() {
 
     fetchSessions();
   }, [isLoaded, isSignedIn, router]);
+
+  const handleDeleteSession = (id: string) => {
+    setDeletingIds((prev) => new Set(prev).add(id));
+    setTimeout(() => {
+      setSessions((prev) => prev.filter((s) => s.id !== id));
+      setDeletingIds((prev) => {
+        const next = new Set(prev);
+        next.delete(id);
+        return next;
+      });
+    }, 300);
+  };
 
   if (!isLoaded || !isSignedIn) {
     return null;
@@ -207,7 +220,9 @@ export default function DashboardPage() {
               {sessions.map((session, idx) => (
                 <div
                   key={session.id}
-                  className="animate-fade-in-up"
+                  className={`animate-fade-in-up transition-all duration-300 ${
+                    deletingIds.has(session.id) ? "opacity-0 scale-95 pointer-events-none" : ""
+                  }`}
                   style={{ animationDelay: `${idx * 75}ms` }}
                 >
                   <SessionCard
@@ -217,6 +232,7 @@ export default function DashboardPage() {
                     createdAt={session.createdAt}
                     fitScore={session.fitScore}
                     simulacroStatus={session.simulacroStatus}
+                    onDelete={handleDeleteSession}
                   />
                 </div>
               ))}

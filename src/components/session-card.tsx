@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 interface SessionCardProps {
   id: string;
@@ -9,6 +10,7 @@ interface SessionCardProps {
   createdAt: Date | string;
   fitScore?: number | null;
   simulacroStatus?: string | null;
+  onDelete?: (id: string) => void;
 }
 
 export default function SessionCard({
@@ -18,7 +20,37 @@ export default function SessionCard({
   createdAt,
   fitScore,
   simulacroStatus,
+  onDelete,
 }: SessionCardProps) {
+  const [deleteStage, setDeleteStage] = useState<"idle" | "confirming" | "deleting">("idle");
+
+  const handleDeleteClick = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (deleteStage === "idle") {
+      setDeleteStage("confirming");
+      return;
+    }
+
+    if (deleteStage === "confirming") {
+      setDeleteStage("deleting");
+      try {
+        const res = await fetch(`/api/sessions/${id}`, { method: "DELETE" });
+        const result = await res.json();
+        if (!res.ok) {
+          console.error("Delete failed:", result.error);
+          setDeleteStage("confirming");
+          return;
+        }
+        onDelete?.(id);
+      } catch (err) {
+        console.error("Delete error:", err);
+        setDeleteStage("confirming");
+      }
+    }
+  };
+
   const date = new Date(createdAt);
   const formattedDate = date.toLocaleDateString("es-ES", {
     year: "numeric",
@@ -68,6 +100,40 @@ export default function SessionCard({
         <div className="absolute -inset-0.5 bg-gradient-to-br from-teal/30 to-transparent rounded-2xl opacity-0 group-hover:opacity-50 transition-opacity duration-300 -z-20 blur-xl" />
 
         <div className="p-6 h-full flex flex-col gap-4 relative z-10">
+          {/* Delete Button */}
+          {onDelete && (
+            <button
+              onClick={handleDeleteClick}
+              onBlur={() => { if (deleteStage === "confirming") setDeleteStage("idle"); }}
+              disabled={deleteStage === "deleting"}
+              aria-label={deleteStage === "confirming" ? "Confirmar eliminación" : "Eliminar sesión"}
+              className={`
+                absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
+                text-xs font-bold uppercase tracking-widest
+                transition-all duration-200 cursor-pointer
+                disabled:opacity-50 disabled:cursor-not-allowed
+                ${deleteStage === "idle"
+                  ? "opacity-0 group-hover:opacity-100 bg-surface/80 border border-border text-text-muted hover:bg-red/10 hover:border-red/30 hover:text-red"
+                  : "opacity-100 bg-red/10 border border-red/40 text-red hover:bg-red/20"
+                }
+              `}
+            >
+              {deleteStage === "deleting" ? (
+                <svg className="w-3 h-3 animate-spin" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
+                </svg>
+              ) : (
+                <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              )}
+              {deleteStage === "confirming" && <span>Confirmar</span>}
+              {deleteStage === "deleting" && <span>Eliminando...</span>}
+            </button>
+          )}
+
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
             <div className="flex-1 min-w-0">
