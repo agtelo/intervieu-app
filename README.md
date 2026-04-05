@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Interview Ninja
 
-## Getting Started
+App de preparación de entrevistas laborales con IA. Subí tu CV, la descripción del puesto y datos de la empresa. La IA investiga, analiza el fit y te ofrece un simulacro de entrevista personalizado.
 
-First, run the development server:
+## Features
+
+- 📄 **Parse CV & JD** — Soporta PDF y texto plano
+- 🔍 **Intel de la empresa** — Scrapea automáticamente el sitio web
+- 📊 **Análisis de fit** — Score + fortalezas/debilidades personalizadas
+- ❓ **Preguntas probables** — 8-10 preguntas generadas por IA basadas en tu perfil
+- 👤 **Perfil del entrevistador** — Búsqueda automática de info pública
+- 💬 **Simulacro en tiempo real** — Chat streaming con IA que actúa como entrevistador
+- 🎯 **Scoring + feedback** — Evaluación honesta de tu desempeño
+
+## Tech Stack
+
+- **Framework**: Next.js 16 + TypeScript
+- **Estilos**: Tailwind CSS + shadcn/ui (dark theme)
+- **IA**: Anthropic Claude API (claude-sonnet-4-20250514)
+- **BD**: Prisma + SQLite (local), migrable a Postgres
+- **PDF**: pdf-parse
+- **Scraping**: cheerio + fetch
+
+## Arrancar
+
+### 1. Obtener API key
+
+Necesitás una clave de Anthropic. Obtené la tuya gratis en:
+https://console.anthropic.com/
+
+### 2. Configurar .env.local
+
+```bash
+cp .env.local.example .env.local
+```
+
+Edita `.env.local` y reemplaza `YOUR_KEY_HERE` con tu clave:
+
+```env
+ANTHROPIC_API_KEY=sk-ant-tu-clave-aqui-xyzabc...
+```
+
+### 3. Instalar dependencias
+
+```bash
+npm install
+```
+
+### 4. Inicializar BD
+
+```bash
+npx prisma db push
+npx prisma generate
+```
+
+### 5. Correr dev server
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Abrí [http://localhost:3000](http://localhost:3000) en tu navegador.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Flujo de uso
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. **Landing** — Clickeá "Preparar entrevista"
+2. **Formulario** — Subi CV, pega o carga JD, ingresá URL empresa, datos del entrevistador (opcional)
+3. **Processing** — La IA scrapea, analiza y genera briefing (30-60 segundos)
+4. **Dashboard** — 5 tabs:
+   - **Intel**: Info de la empresa
+   - **Fit**: Score + análisis detallado
+   - **Preguntas**: Tips para cada pregunta probable
+   - **Entrevistador**: Perfil encontrado
+   - **Simulacro**: Practicá con IA
+5. **Resultados**: Score, feedback, veredicto
 
-## Learn More
+## Estructura
 
-To learn more about Next.js, take a look at the following resources:
+```
+app/
+├── page.tsx              # Landing
+├── prep/page.tsx         # Formulario
+├── prep/[sessionId]/     # Dashboard
+├── api/                  # Todas las rutas API
+├── layout.tsx            # Root layout
+└── globals.css           # Diseño + variables CSS
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+components/
+├── file-upload.tsx       # Drag & drop
+├── processing-loader.tsx # Progress steps
+├── score-gauge.tsx       # Gauge visual
+├── question-card.tsx     # Card pregunta
+└── ui/                   # shadcn/ui
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+lib/
+├── types.ts              # TypeScript types
+├── prompts.ts            # Prompts de Claude
+├── db.ts                 # Prisma client
+├── scraper.ts            # Web scraping
+├── pdf-parser.ts         # PDF parsing
+└── person-search.ts      # Búsqueda entrevistador
+```
 
-## Deploy on Vercel
+## Roadmap
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- [ ] Rate limiting (5 sesiones/día sin auth)
+- [ ] Clerk auth (login social)
+- [ ] Supabase/Postgres para producción
+- [ ] Firecrawl API fallback
+- [ ] Export resultados (PDF)
+- [ ] Historial de sesiones
+- [ ] Deploy a Vercel
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Errores comunes
+
+**Error: "Can't find module '@anthropic-ai/sdk'"**
+```bash
+npm install @anthropic-ai/sdk
+```
+
+**Error: "API key not found"**
+- Verificá que `.env.local` existe en la raíz
+- Que tiene `ANTHROPIC_API_KEY=sk-ant-...`
+- Restart del dev server después de cambiar .env
+
+**Error: "Can't parse PDF"**
+- Probá pegando el texto directamente en el textarea
+- Asegurate que el PDF no esté encriptado
+
+## Develop
+
+```bash
+npm run dev        # Dev server (http://localhost:3000)
+npm run build      # Next.js build
+npm run start      # Start prod build
+npm run lint       # ESLint
+```
+
+## Deploy
+
+### Vercel (recomendado)
+
+```bash
+npx vercel
+```
+
+Configura en Vercel:
+- Environment variable: `ANTHROPIC_API_KEY`
+- Database: Supabase Postgres
+
+### Manual
+
+Cualquier hosting que soporte Node.js 18+:
+
+```bash
+npm run build
+npm run start
+```
+
+## License
+
+MIT
+
+## Soporte
+
+Reportá bugs en https://github.com/anthropics/claude-code/issues

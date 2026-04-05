@@ -1,0 +1,37 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../.prisma/client"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status    String   @default("draft") // draft | processing | ready | error
+  userId    String?  // Clerk user ID
+  name      String?  // Interview label: "Mercado Libre - Sr. Dev"
+
+  // Inputs
+  cvText              String?
+  cvFileName          String?
+  jdText              String?
+  companyUrl          String?
+  interviewerEmail    String?
+  interviewerLinkedin String?
+  interviewerRole     String?
+
+  // Processed data
+  companyData     String? // JSON: scraped company info
+  interviewerData String? // JSON: found interviewer info
+  briefing        String? // JSON: full briefing result
+  fitScore        Int?
+
+  // Simulacro
+  chatMessages      String? // JSON: array of messages
+  simulacroScore    String? // JSON: score breakdown
+  simulacroStatus   String? @default("pending") // pending | in_progress | completed
+}

@@ -1,0 +1,78 @@
+"use client";
+
+import { useState } from "react";
+import type { Pregunta } from "@/lib/types";
+
+const categoryColors: Record<string, string> = {
+  competencia: "text-teal bg-teal/10 border-teal/20",
+  situacional: "text-blue bg-blue/10 border-blue/20",
+  motivacion: "text-green bg-green/10 border-green/20",
+  tecnica: "text-amber bg-amber/10 border-amber/20",
+  mercado: "text-red bg-red/10 border-red/20",
+};
+
+const categoryLabels: Record<string, string> = {
+  competencia: "Competencia",
+  situacional: "Situacional",
+  motivacion: "Motivacion",
+  tecnica: "Tecnica",
+  mercado: "Mercado",
+};
+
+export function QuestionCard({
+  pregunta,
+  index,
+}: {
+  pregunta: Pregunta;
+  index: number;
+}) {
+  const [isOpen, setIsOpen] = useState(false);
+  const colorClass =
+    categoryColors[pregunta.categoria] || categoryColors.competencia;
+
+  return (
+    <div className="bg-surface border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-surface focus-within:ring-ring transition-all duration-200">
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="w-full text-left p-4 flex items-start gap-3 hover:border-accent hover:bg-surface/80 transition-colors cursor-pointer"
+      >
+        <span className="font-mono text-sm text-text-dim flex-shrink-0 mt-0.5">
+          {String(index + 1).padStart(2, "0")}
+        </span>
+        <div className="flex-1 min-w-0">
+          <p className="text-text text-sm font-medium leading-relaxed">
+            {pregunta.pregunta}
+          </p>
+          <div className="mt-2">
+            <span
+              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold uppercase tracking-wider border ${colorClass}`}
+            >
+              {categoryLabels[pregunta.categoria] || pregunta.categoria}
+            </span>
+          </div>
+        </div>
+        <svg
+          className={`w-5 h-5 text-text-dim flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M19 9l-7 7-7-7"
+          />
+        </svg>
+      </button>
+      {isOpen && (
+        <div className="px-4 pb-4 pl-11">
+          <div className="bg-teal/5 border border-teal/10 rounded-lg p-3">
+            <p className="section-label mb-1">Tip</p>
+            <p className="text-text-muted text-sm">{pregunta.tip}</p>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
