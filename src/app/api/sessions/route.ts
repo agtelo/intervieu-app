@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/db";
+import { sql } from "@/lib/supabase";
 
 export async function GET(req: Request) {
   try {
@@ -13,25 +13,26 @@ export async function GET(req: Request) {
       );
     }
 
-    const sessions = await prisma.session.findMany({
-      where: { userId },
-      orderBy: { createdAt: "desc" },
-      select: {
-        id: true,
-        name: true,
-        createdAt: true,
-        status: true,
-        fitScore: true,
-        simulacroStatus: true,
-        companyUrl: true,
-      },
-    });
+    const sessions = await sql`
+      SELECT
+        id,
+        name,
+        "createdAt",
+        status,
+        "fitScore",
+        "simulacroStatus",
+        "companyUrl"
+      FROM "Session"
+      WHERE "userId" = ${userId}
+      ORDER BY "createdAt" DESC
+    `;
 
     return NextResponse.json({ data: sessions, error: null });
   } catch (err) {
-    console.error("Error fetching sessions:", err);
+    const message = err instanceof Error ? err.message : "Unknown error";
+    console.error("Error fetching sessions:", message, err);
     return NextResponse.json(
-      { data: null, error: "Error al obtener las sesiones." },
+      { data: null, error: `Error al obtener las sesiones: ${message}` },
       { status: 500 }
     );
   }
@@ -59,21 +60,39 @@ export async function POST(req: Request) {
       );
     }
 
-    const session = await prisma.session.create({
-      data: {
-        status: "processing",
-        userId: userId || null,
-        cvText,
-        cvFileName,
-        jdText,
-        companyUrl,
-        interviewerEmail: interviewerEmail || null,
-        interviewerLinkedin: interviewerLinkedin || null,
-        interviewerRole: interviewerRole || null,
-      },
-    });
+    const id = crypto.randomUUID();
 
-    return NextResponse.json({ data: { id: session.id }, error: null });
+    await sql`
+      INSERT INTO "Session" (
+        id,
+        status,
+        "userId",
+        "cvText",
+        "cvFileName",
+        "jdText",
+        "companyUrl",
+        "interviewerEmail",
+        "interviewerLinkedin",
+        "interviewerRole",
+        "createdAt",
+        "updatedAt"
+      ) VALUES (
+        ${id},
+        'processing',
+        ${userId || null},
+        ${cvText},
+        ${cvFileName},
+        ${jdText},
+        ${companyUrl},
+        ${interviewerEmail || null},
+        ${interviewerLinkedin || null},
+        ${interviewerRole || null},
+        NOW(),
+        NOW()
+      )
+    `;
+
+    return NextResponse.json({ data: { id }, error: null });
   } catch (err) {
     console.error("Error creating session:", err);
     return NextResponse.json(

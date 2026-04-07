@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { scrapeCompany } from "@/lib/scraper";
-import { prisma } from "@/lib/db";
+import { sql } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -18,10 +18,11 @@ export async function POST(req: Request) {
 
     // Save to session if sessionId provided
     if (sessionId) {
-      await prisma.session.update({
-        where: { id: sessionId },
-        data: { companyData: result.content },
-      });
+      await sql`
+        UPDATE "Session"
+        SET "companyData" = ${result.content}, "updatedAt" = NOW()
+        WHERE id = ${sessionId}
+      `;
     }
 
     return NextResponse.json({

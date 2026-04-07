@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { searchPerson } from "@/lib/person-search";
-import { prisma } from "@/lib/db";
+import { sql } from "@/lib/supabase";
 
 export async function POST(req: Request) {
   try {
@@ -18,10 +18,11 @@ export async function POST(req: Request) {
 
     // Save to session if sessionId provided
     if (sessionId) {
-      await prisma.session.update({
-        where: { id: sessionId },
-        data: { interviewerData: profile },
-      });
+      await sql`
+        UPDATE "Session"
+        SET "interviewerData" = ${profile}, "updatedAt" = NOW()
+        WHERE id = ${sessionId}
+      `;
     }
 
     return NextResponse.json({ data: { profile }, error: null });

@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/db";
+import { sql } from "@/lib/supabase";
 
 export async function GET(
   req: Request,
@@ -10,7 +10,11 @@ export async function GET(
     const { userId } = await auth();
     const { id } = await params;
 
-    const session = await prisma.session.findUnique({ where: { id } });
+    const sessions = await sql`
+      SELECT * FROM "Session" WHERE id = ${id}
+    `;
+
+    const session = sessions[0];
 
     if (!session) {
       return NextResponse.json(
@@ -47,7 +51,11 @@ export async function PATCH(
     const body = await req.json();
     const { chatMessages, simulacroScore } = body;
 
-    const session = await prisma.session.findUnique({ where: { id } });
+    const sessions = await sql`
+      SELECT * FROM "Session" WHERE id = ${id}
+    `;
+
+    const session = sessions[0];
 
     if (!session) {
       return NextResponse.json(
@@ -64,16 +72,17 @@ export async function PATCH(
       );
     }
 
-    const updated = await prisma.session.update({
-      where: { id },
-      data: {
-        chatMessages: JSON.stringify(chatMessages),
-        simulacroScore: JSON.stringify(simulacroScore),
-        simulacroStatus: "completed",
-      },
-    });
+    await sql`
+      UPDATE "Session"
+      SET
+        "chatMessages" = ${JSON.stringify(chatMessages)},
+        "simulacroScore" = ${JSON.stringify(simulacroScore)},
+        "simulacroStatus" = 'completed',
+        "updatedAt" = NOW()
+      WHERE id = ${id}
+    `;
 
-    return NextResponse.json({ data: { id: updated.id }, error: null });
+    return NextResponse.json({ data: { id }, error: null });
   } catch (err) {
     console.error("Error updating session:", err);
     return NextResponse.json(
@@ -91,7 +100,11 @@ export async function DELETE(
     const { userId } = await auth();
     const { id } = await params;
 
-    const session = await prisma.session.findUnique({ where: { id } });
+    const sessions = await sql`
+      SELECT * FROM "Session" WHERE id = ${id}
+    `;
+
+    const session = sessions[0];
 
     if (!session) {
       return NextResponse.json(
@@ -108,7 +121,7 @@ export async function DELETE(
       );
     }
 
-    await prisma.session.delete({ where: { id } });
+    await sql`DELETE FROM "Session" WHERE id = ${id}`;
     return NextResponse.json({ data: { id }, error: null });
   } catch (err) {
     console.error("Error deleting session:", err);

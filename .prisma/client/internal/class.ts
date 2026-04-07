@@ -19,8 +19,8 @@ const config: runtime.GetPrismaClientConfig = {
   "previewFeatures": [],
   "clientVersion": "7.6.0",
   "engineVersion": "75cbdc1eb7150937890ad5465d861175c6624711",
-  "activeProvider": "sqlite",
-  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../.prisma/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n}\n\nmodel Session {\n  id        String   @id @default(cuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  status    String   @default(\"draft\") // draft | processing | ready | error\n  userId    String? // Clerk user ID\n  name      String? // Interview label: \"Mercado Libre - Sr. Dev\"\n\n  // Inputs\n  cvText              String?\n  cvFileName          String?\n  jdText              String?\n  companyUrl          String?\n  interviewerEmail    String?\n  interviewerLinkedin String?\n  interviewerRole     String?\n\n  // Processed data\n  companyData     String? // JSON: scraped company info\n  interviewerData String? // JSON: found interviewer info\n  briefing        String? // JSON: full briefing result\n  fitScore        Int?\n\n  // Simulacro\n  chatMessages    String? // JSON: array of messages\n  simulacroScore  String? // JSON: score breakdown\n  simulacroStatus String? @default(\"pending\") // pending | in_progress | completed\n}\n",
+  "activeProvider": "postgresql",
+  "inlineSchema": "generator client {\n  provider = \"prisma-client\"\n  output   = \"../.prisma/client\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n}\n\nmodel Session {\n  id        String   @id @default(cuid())\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n  status    String   @default(\"draft\") // draft | processing | ready | error\n  userId    String? // Clerk user ID\n  name      String? // Interview label: \"Mercado Libre - Sr. Dev\"\n\n  // Inputs\n  cvText              String?\n  cvFileName          String?\n  jdText              String?\n  companyUrl          String?\n  interviewerEmail    String?\n  interviewerLinkedin String?\n  interviewerRole     String?\n\n  // Processed data\n  companyData     String? // JSON: scraped company info\n  interviewerData String? // JSON: found interviewer info\n  briefing        String? // JSON: full briefing result\n  fitScore        Int?\n\n  // Simulacro\n  chatMessages    String? // JSON: array of messages\n  simulacroScore  String? // JSON: score breakdown\n  simulacroStatus String? @default(\"pending\") // pending | in_progress | completed\n}\n",
   "runtimeDataModel": {
     "models": {},
     "enums": {},
@@ -45,10 +45,10 @@ async function decodeBase64AsWasm(wasmBase64: string): Promise<WebAssembly.Modul
 }
 
 config.compilerWasm = {
-  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.mjs"),
+  getRuntime: async () => await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.mjs"),
 
   getQueryCompilerWasmModule: async () => {
-    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.sqlite.wasm-base64.mjs")
+    const { wasm } = await import("@prisma/client/runtime/query_compiler_fast_bg.postgresql.wasm-base64.mjs")
     return await decodeBase64AsWasm(wasm)
   },
 
