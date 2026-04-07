@@ -1,15 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { Mic2, Zap } from "lucide-react";
+import { useState, useEffect, useRef } from "react";
+import { Mic2, Check } from "lucide-react";
 import type { BriefingResult } from "@/lib/types";
 
-export function SimulacroTab({ 
-  sessionId, 
-  briefing, 
-  cvText, 
-  jdText 
-}: { 
+export function SimulacroTab({
+  sessionId,
+  briefing,
+  cvText,
+  jdText
+}: {
   sessionId: string;
   briefing: BriefingResult;
   cvText: string;
@@ -18,6 +18,28 @@ export function SimulacroTab({
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Initial greeting message
+  useEffect(() => {
+    const initialMessage = `Hola, bienvenido. Soy tu entrevistador para la posición en ${briefing.empresa.nombre}. He revisado tu perfil y estoy impresionado. Empecemos con la entrevista. ¿Podrías contarme acerca de tu experiencia más relevante para este rol?`;
+    setMessages([{ role: "assistant", content: initialMessage }]);
+  }, [briefing.empresa.nombre]);
+
+  // Auto-scroll to bottom
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
+  // Auto-expand textarea
+  useEffect(() => {
+    const textarea = textareaRef.current;
+    if (textarea) {
+      textarea.style.height = "auto";
+      textarea.style.height = Math.min(textarea.scrollHeight, 140) + "px";
+    }
+  }, [input]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -91,8 +113,8 @@ export function SimulacroTab({
 
   return (
     <div className="fixed inset-0 flex flex-col bg-background lg:relative lg:inset-auto lg:rounded-2xl lg:border lg:border-teal/20 animate-fade-in overflow-hidden">
-      {/* Header */}
-      <div className="px-5 py-6 sm:px-8 sm:py-8 border-b border-teal/20 bg-gradient-to-r from-surface/80 via-surface/60 to-teal/5 backdrop-blur-sm">
+      {/* Header - Fixed */}
+      <div className="flex-shrink-0 px-5 py-6 sm:px-8 sm:py-8 border-b border-teal/20 bg-gradient-to-r from-surface/80 via-surface/60 to-teal/5 backdrop-blur-sm">
         <div className="flex items-start gap-4 mb-4">
           <Mic2 className="w-10 h-10 text-teal mt-1 flex-shrink-0" />
           <div>
@@ -109,46 +131,15 @@ export function SimulacroTab({
         </p>
       </div>
 
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-4">
-        {messages.length === 0 && (
-          <div className="flex items-center justify-center h-full">
-            <div className="text-center space-y-6">
-              <div className="flex justify-center">
-                <Zap className="w-20 h-20 text-teal" />
-              </div>
-              <div>
-                <h2 className="text-4xl font-black text-text mb-4">
-                  Comienza tu Simulacro
-                </h2>
-                <p className="text-text-muted max-w-md mx-auto leading-relaxed font-light">
-                  El entrevistador comenzará con una pregunta inicial adaptada a tu perfil y a {briefing.empresa.nombre}
-                </p>
-              </div>
-              <button
-                onClick={() => {
-                  setInput("");
-                  const msg = "Hola, quiero comenzar la entrevista.";
-                  setMessages([{ role: "user", content: msg }]);
-                }}
-                className="group relative mt-6 px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95"
-              >
-                <span className="relative z-10">
-                  Iniciar Ahora
-                </span>
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-300" />
-              </button>
-            </div>
-          </div>
-        )}
-
+      {/* Messages - Scrollable with invisible scrollbar */}
+      <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-4 scrollbar-hidden">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} animate-fade-in w-full`}>
             <div
               className={`w-full sm:max-w-2xl px-5 sm:px-6 py-4 rounded-2xl transition-all duration-300 ${
                 msg.role === "assistant"
-                  ? "bg-surface border border-teal/20 text-text hover:border-teal/40 hover:bg-surface/95"
-                  : "bg-teal text-white shadow-lg shadow-teal/20"
+                  ? "bg-surface border border-teal/20 text-text shadow-md shadow-teal/5 hover:border-teal/40 hover:bg-surface/95"
+                  : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-lg shadow-teal/30"
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap font-light break-words">
@@ -160,7 +151,7 @@ export function SimulacroTab({
 
         {loading && (
           <div className="flex justify-start w-full">
-            <div className="bg-surface border border-teal/20 px-6 py-4 rounded-2xl hover:border-teal/40 transition-all duration-300">
+            <div className="bg-surface border border-teal/20 px-6 py-4 rounded-2xl shadow-md shadow-teal/5">
               <div className="flex gap-2">
                 <div className="w-2.5 h-2.5 rounded-full bg-teal animate-bounce" />
                 <div
@@ -175,30 +166,37 @@ export function SimulacroTab({
             </div>
           </div>
         )}
+        <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
+      {/* Input - Fixed */}
       <form
         onSubmit={handleSubmit}
-        className="p-5 sm:p-8 border-t border-teal/20 bg-gradient-to-t from-surface/95 via-surface/60 to-teal/5 backdrop-blur-sm"
+        className="flex-shrink-0 p-5 sm:p-8 border-t border-teal/20 bg-gradient-to-t from-surface/95 via-surface/60 to-teal/5 backdrop-blur-sm"
       >
-        <div className="flex gap-3">
-          <input
-            type="text"
+        <div className="flex gap-3 items-end">
+          <textarea
+            ref={textareaRef}
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tu respuesta aquí..."
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && !e.shiftKey) {
+                e.preventDefault();
+                handleSubmit(e as unknown as React.FormEvent);
+              }
+            }}
+            placeholder="Tu respuesta aquí... (Shift+Enter para nueva línea)"
             disabled={loading}
-            className="flex-1 px-5 py-4 bg-surface border border-teal/20 rounded-2xl focus:border-teal/50 focus:outline-none focus:ring-1 focus:ring-teal/20 text-text placeholder:text-text-muted disabled:opacity-50 transition-all duration-300 font-light"
+            className="flex-1 px-5 py-3 bg-surface border border-teal/20 rounded-xl focus:border-teal/50 focus:outline-none focus:ring-1 focus:ring-teal/20 text-text placeholder:text-text-muted disabled:opacity-50 transition-all duration-300 font-light resize-none max-h-36 overflow-y-auto scrollbar-hidden"
+            rows={1}
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="group relative px-6 sm:px-8 py-3 bg-teal text-white font-bold rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 disabled:opacity-50 disabled:hover:shadow-none whitespace-nowrap"
+            className="group relative flex-shrink-0 w-11 h-11 bg-gradient-to-r from-teal via-teal to-teal/70 text-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-teal/60 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:hover:shadow-none disabled:hover:scale-100 flex items-center justify-center"
+            title="Enviar respuesta (Enter)"
           >
-            <span className="relative z-10">
-              {loading ? "..." : "Enviar"}
-            </span>
+            <Check className="w-5 h-5 relative z-10" />
             <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 disabled:hidden" />
           </button>
         </div>
@@ -218,6 +216,15 @@ export function SimulacroTab({
 
         .animate-fade-in {
           animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        /* Invisible scrollbar */
+        .scrollbar-hidden::-webkit-scrollbar {
+          display: none;
+        }
+        .scrollbar-hidden {
+          -ms-overflow-style: none;
+          scrollbar-width: none;
         }
       `}</style>
     </div>
