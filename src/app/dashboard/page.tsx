@@ -102,7 +102,7 @@ export default function DashboardPage() {
             </div>
             <Link
               href="/prep"
-              className="group relative px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 whitespace-nowrap lg:self-start flex items-center gap-3"
+              className="group relative btn-base btn-primary btn-primary-lg whitespace-nowrap lg:self-start flex items-center gap-3 focus:focus-ring"
             >
               <span className="relative z-10 flex items-center gap-3">
                 Nueva entrevista
@@ -170,7 +170,7 @@ export default function DashboardPage() {
                 </p>
                 <Link
                   href="/prep"
-                  className="group relative px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 inline-flex items-center gap-3"
+                  className="group relative btn-base btn-primary btn-primary-lg inline-flex items-center gap-3 focus:focus-ring"
                 >
                   <span className="relative z-10 flex items-center gap-3">
                     Crear primera entrevista

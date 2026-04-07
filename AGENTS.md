@@ -4,11 +4,11 @@
 App Next.js 14 de preparación de entrevistas laborales con IA. El usuario sube su CV + Job Description + URL de la empresa + datos del entrevistador. La app scrapea el sitio, busca info del entrevistador, analiza el fit candidato-puesto, genera preguntas probables y ofrece un simulacro de entrevista con IA.
 
 ## Stack obligatorio
-- **Framework**: Next.js 14 (App Router), TypeScript estricto
+- **Framework**: Next.js 15 (App Router), TypeScript estricto
 - **Estilos**: Tailwind CSS + shadcn/ui (dark theme)
-- **IA**: Anthropic Claude API (`claude-sonnet-4-20250514`) via `@anthropic-ai/sdk`
+- **IA**: Groq API (`llama-3.3-70b-versatile`) via `groq-sdk` + `@ai-sdk/groq`
 - **PDF**: `pdf-parse` para extraer texto de CVs y JDs
-- **DB**: Prisma + SQLite (dev), migrable a Postgres/Supabase
+- **DB**: Prisma + SQLite (dev, libsql adapter), migrable a Postgres/Supabase
 - **Estado**: Zustand para estado de sesión
 - **Deploy**: Vercel
 
@@ -125,9 +125,9 @@ Ejecutar en secuencia (mostrar progreso step by step):
 
 ```
 Step 1: Parse CV → pdf-parse → texto
-Step 2: Scrape empresa → fetch homepage + /about + /pricing → condensar con Claude
-Step 3: Search entrevistador → Claude + web_search tool
-Step 4: Generate briefing → Claude con todo el contexto → JSON completo
+Step 2: Scrape empresa → fetch homepage + /about + /pricing → condensar con Groq
+Step 3: Search entrevistador → Groq + web_search tool
+Step 4: Generate briefing → Groq con todo el contexto → JSON completo
 Step 5: Guardar en DB → redirect a dashboard
 ```
 
@@ -137,7 +137,7 @@ Step 5: Guardar en DB → redirect a dashboard
 - **Fit**: score gauge (SVG), highlights, fortalezas con evidencia, debilidades con tips
 - **Preguntas**: 8-10 cards expandibles con pregunta + tip + categoría
 - **Entrevistador**: perfil encontrado, tips de conexión
-- **Simulacro**: chat streaming con Claude
+- **Simulacro**: chat streaming con Groq
 
 ### 4. Simulacro
 - System prompt con todo el contexto (briefing + CV + JD)
@@ -164,17 +164,17 @@ Acción: fetch homepage, /about, /pricing. Extraer texto con cheerio. Si falla, 
 ### POST /api/search-person
 Input: `{ email?: string, linkedin?: string, company?: string, role?: string }`
 Output: `{ data: { profile: string } }`
-Acción: Claude con web_search tool
+Acción: Groq con web_search tool
 
 ### POST /api/generate
 Input: `{ sessionId: string }`
 Output: `{ data: BriefingResult }`
-Acción: Tomar datos de la sesión, llamar a Claude con prompt de briefing, guardar resultado
+Acción: Tomar datos de la sesión, llamar a Groq con prompt de briefing, guardar resultado
 
 ### POST /api/chat
 Input: `{ messages: Message[], systemPrompt: string }`
 Output: ReadableStream (SSE)
-Acción: Claude streaming
+Acción: Groq streaming
 
 ### POST /api/score
 Input: `{ messages: Message[], jdText: string }`

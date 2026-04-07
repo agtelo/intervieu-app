@@ -12,6 +12,14 @@ const categoriaConfig = {
   mercado: { icon: "trending", label: "Mercado", color: "red" },
 };
 
+const colorTextMap: Record<string, string> = {
+  teal: "text-teal",
+  blue: "text-blue",
+  green: "text-green",
+  amber: "text-amber",
+  red: "text-red",
+};
+
 function getCategoryIcon(iconType: string) {
   const iconProps = "w-6 h-6";
   switch (iconType) {
@@ -52,7 +60,7 @@ export function QuestionsTab({ preguntas }: { preguntas: Pregunta[] }) {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 animate-fade-in-up delay-100">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 animate-fade-in-up delay-100">
         {Object.entries(categoriaConfig).map(([cat, config]) => {
           const count = groupedByCategory[cat as keyof typeof categoriaConfig]?.length || 0;
           if (count === 0) return null;
@@ -72,7 +80,7 @@ export function QuestionsTab({ preguntas }: { preguntas: Pregunta[] }) {
               key={cat}
               className={`flex flex-col items-center justify-center p-3 rounded-lg border ${colorClass} transition-all duration-300 hover:shadow-lg`}
             >
-              <div className="text-blue mb-1">{getCategoryIcon(config.icon)}</div>
+              <div className={`mb-1 ${colorTextMap[config.color]}`}>{getCategoryIcon(config.icon)}</div>
               <span className="text-xs font-bold text-center leading-tight">
                 {config.label}
               </span>
@@ -113,7 +121,7 @@ export function QuestionsTab({ preguntas }: { preguntas: Pregunta[] }) {
           return (
             <div key={category}>
               <div className="flex items-center gap-3 mb-5">
-                <div className={`text-${config.color}`}>{getCategoryIcon(config.icon)}</div>
+                <div className={colorTextMap[config.color]}>{getCategoryIcon(config.icon)}</div>
                 <div>
                   <h2 className="text-xl font-black">{config.label}</h2>
                   <p className="text-xs text-text-muted font-mono">
@@ -147,7 +155,7 @@ export function QuestionsTab({ preguntas }: { preguntas: Pregunta[] }) {
                         </p>
                       </div>
                       <svg
-                        className={`w-5 h-5 text-${config.color} flex-shrink-0 transition-transform duration-300 ${
+                        className={`w-5 h-5 ${colorTextMap[config.color]} flex-shrink-0 transition-transform duration-300 ${
                           expanded === pregunta.idx ? "rotate-180" : ""
                         }`}
                         fill="none"

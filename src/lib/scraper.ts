@@ -1,6 +1,61 @@
 import * as cheerio from "cheerio";
 
+/**
+ * Validates URL to prevent SSRF attacks
+ */
+function validateUrl(urlString: string): boolean {
+  try {
+    const url = new URL(urlString);
+
+    // Block dangerous protocols
+    const blockedProtocols = [
+      "file:",
+      "gopher:",
+      "data:",
+      "ftp:",
+      "javascript:",
+    ];
+    if (blockedProtocols.includes(url.protocol)) {
+      return false;
+    }
+
+    // Block private IP addresses
+    const hostname = url.hostname;
+    const blockedIps = [
+      "127.0.0.1",
+      "localhost",
+      "169.254.169.254",
+      "0.0.0.0",
+      "::1",
+    ];
+
+    if (
+      blockedIps.includes(hostname) ||
+      hostname.startsWith("192.168.") ||
+      hostname.startsWith("10.") ||
+      hostname.startsWith("172.")
+    ) {
+      return false;
+    }
+
+    // Check for valid TLD
+    if (!hostname.includes(".")) {
+      return false;
+    }
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 export async function scrapeUrl(url: string): Promise<string> {
+  // Validate URL before scraping (SSRF protection)
+  if (!validateUrl(url)) {
+    console.warn(`[SECURITY] Blocked scrape attempt for URL: ${url}`);
+    return "";
+  }
+
   try {
     const response = await fetch(url, {
       headers: {
@@ -12,6 +67,15 @@ export async function scrapeUrl(url: string): Promise<string> {
     });
 
     if (!response.ok) return "";
+
+    // Check response size to prevent memory exhaustion
+    const contentLength = response.headers.get("content-length");
+    if (contentLength && parseInt(contentLength) > 10 * 1024 * 1024) {
+      console.warn(
+        `[SECURITY] Response too large for URL: ${url} (${contentLength} bytes)`
+      );
+      return "";
+    }
 
     const html = await response.text();
     const $ = cheerio.load(html);

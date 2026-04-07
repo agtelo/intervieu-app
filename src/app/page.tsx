@@ -12,12 +12,16 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
-    if (isLoaded && isSignedIn) {
+    // Only redirect if loaded and actually signed in
+    if (!isLoaded) return;
+
+    if (isSignedIn) {
       router.push("/dashboard");
     }
   }, [isLoaded, isSignedIn, router]);
 
-  if (isLoaded && isSignedIn) {
+  // While loading or signed in, don't render anything
+  if (!isLoaded || isSignedIn) {
     return null;
   }
 
@@ -71,7 +75,7 @@ export default function Home() {
           <div className="flex gap-4 mb-16 animate-fade-in-up delay-200">
             <Link
               href="/prep"
-              className="group relative btn-primary text-base sm:text-lg focus:focus-ring"
+              className="group relative btn-base btn-primary btn-primary-lg focus:focus-ring"
             >
               <span className="relative z-10 flex items-center gap-3">
                 Comenzar ahora

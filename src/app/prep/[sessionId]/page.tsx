@@ -244,7 +244,6 @@ export default function DashboardPage() {
             )}
             {activeTab === "simulacro" && session && (
               <SimulacroTab
-                sessionId={sessionId}
                 briefing={briefing}
                 cvText={session.cvText || ""}
                 jdText={session.jdText || ""}

@@ -1,33 +1,9 @@
 "use client";
 
-import { Zap, Trophy, Sparkles } from "lucide-react";
 import type { FitAnalysis } from "@/lib/types";
+import { getHighlightIcon, getScoreBgColor, getScoreLabel } from "@/lib/ui-utils";
 
-function getHighlightIcon(type: string) {
-  const iconProps = "w-6 h-6";
-  switch (type) {
-    case "killer":
-      return <Zap className={iconProps} />;
-    case "strong":
-      return <Trophy className={iconProps} />;
-    default:
-      return <Sparkles className={iconProps} />;
-  }
-}
-
-export function FitTab({ fit }: { fit: FitAnalysis }) {  const getScoreBgColor = (score: number) => {
-    if (score >= 80) return "text-green";
-    if (score >= 60) return "text-amber";
-    return "text-red";
-  };
-
-  const getScoreLabel = (score: number) => {
-    if (score >= 90) return "Excelente";
-    if (score >= 80) return "Muy bueno";
-    if (score >= 70) return "Bueno";
-    if (score >= 60) return "Aceptable";
-    return "Necesita mejora";
-  };
+export function FitTab({ fit }: { fit: FitAnalysis }) {
 
   return (
     <div className="space-y-8 animate-fade-in">
@@ -252,43 +228,6 @@ export function FitTab({ fit }: { fit: FitAnalysis }) {  const getScoreBgColor =
         </div>
       )}
 
-      <style jsx>{`
-        @keyframes fadeInUp {
-          from {
-            opacity: 0;
-            transform: translateY(20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-
-        .animate-fade-in {
-          animation: fadeInUp 0.6s ease-out forwards;
-        }
-
-        .animate-fade-in-up {
-          animation: fadeInUp 0.6s ease-out forwards;
-          opacity: 0;
-        }
-
-        .delay-100 {
-          animation-delay: 100ms;
-        }
-
-        .delay-200 {
-          animation-delay: 200ms;
-        }
-
-        .delay-300 {
-          animation-delay: 300ms;
-        }
-
-        .delay-400 {
-          animation-delay: 400ms;
-        }
-      `}</style>
     </div>
   );
 }

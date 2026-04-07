@@ -280,7 +280,7 @@ export default function PrepPage() {
                 }}
                 placeholder="Pega la descripcion del puesto aca..."
                 rows={6}
-                className="textarea-base focus-ring"
+                className="textarea-base"
               />
               <div className="text-center text-text-dim text-xs">o</div>
               <FileUpload
@@ -305,15 +305,13 @@ export default function PrepPage() {
               value={companyUrl}
               onChange={(e) => setCompanyUrl(e.target.value)}
               placeholder="empresa.com"
-              className="input-base focus-ring"
+              className="input-base"
             />
           </div>
 
           {/* Interviewer section */}
-          <div className="relative overflow-hidden rounded-2xl border border-teal/20 bg-gradient-to-br from-teal/8 via-surface to-surface/95 p-6 animate-fade-in-up delay-100">
-            <div className="absolute inset-0 bg-gradient-to-br from-teal/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 -z-10" />
-
-            <div className="mb-6">
+          <div className="relative space-y-4 animate-fade-in-up delay-100">
+            <div>
               <span className="section-label text-teal/60">Entrevistador</span>
               <span className="text-text-muted text-xs ml-3">(opcional)</span>
             </div>
@@ -327,7 +325,7 @@ export default function PrepPage() {
                   value={interviewerEmail}
                   onChange={(e) => setInterviewerEmail(e.target.value)}
                   placeholder="nombre@empresa.com"
-                  className="input-base focus-ring"
+                  className="input-base"
                 />
               </div>
               <div>
@@ -339,7 +337,7 @@ export default function PrepPage() {
                   value={interviewerLinkedin}
                   onChange={(e) => setInterviewerLinkedin(e.target.value)}
                   placeholder="linkedin.com/in/..."
-                  className="input-base focus-ring"
+                  className="input-base"
                 />
               </div>
             </div>
@@ -352,7 +350,7 @@ export default function PrepPage() {
                 value={interviewerRole}
                 onChange={(e) => setInterviewerRole(e.target.value)}
                 placeholder="Ej: Head of Sales, CTO, HR Manager"
-                className="input-base focus-ring"
+                className="input-base"
               />
             </div>
           </div>
@@ -377,7 +375,7 @@ export default function PrepPage() {
           <button
             type="submit"
             disabled={isProcessing}
-            className="group relative w-full btn-primary-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed focus:focus-ring animate-fade-in-up delay-100"
+            className="group relative w-full btn-base btn-primary btn-primary-lg disabled:opacity-50 disabled:cursor-not-allowed focus:focus-ring animate-fade-in-up delay-100"
           >
             <span className="relative z-10">
               Analizar y preparar briefing

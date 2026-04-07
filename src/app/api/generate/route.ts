@@ -2,17 +2,28 @@ import { NextResponse } from "next/server";
 import { callGroq } from "@/lib/groq";
 import { prisma } from "@/lib/db";
 import { buildBriefingPrompt } from "@/lib/prompts";
+import { getUserId, validateSessionOwnership, apiResponse, handleApiError } from "@/lib/api-utils";
+import { generateSchema, safeParseBody } from "@/lib/validation";
 
 export async function POST(req: Request) {
   try {
-    const body = await req.json();
-    const { sessionId } = body;
+    // Parse and validate input
+    const parseResult = await safeParseBody(req, generateSchema);
+    if (!parseResult.success) {
+      return apiResponse(null, parseResult.error, 400);
+    }
 
-    if (!sessionId) {
-      return NextResponse.json(
-        { data: null, error: "Session ID requerido." },
-        { status: 400 }
-      );
+    const { sessionId } = parseResult.data;
+    const userId = await getUserId();
+
+    if (!userId) {
+      return apiResponse(null, "No autenticado.", 401);
+    }
+
+    // Validate session ownership
+    const isOwner = await validateSessionOwnership(sessionId, userId);
+    if (!isOwner) {
+      return apiResponse(null, "No tienes acceso a esta sesión.", 403);
     }
 
     const session = await prisma.session.findUnique({
@@ -20,23 +31,21 @@ export async function POST(req: Request) {
     });
 
     if (!session) {
-      return NextResponse.json(
-        { data: null, error: "Sesion no encontrada." },
-        { status: 404 }
-      );
+      return apiResponse(null, "Sesión no encontrada.", 404);
     }
 
     if (!session.cvText || !session.jdText) {
-      return NextResponse.json(
-        { data: null, error: "Faltan datos de CV o JD en la sesion." },
-        { status: 400 }
+      return apiResponse(
+        null,
+        "Faltan datos de CV o JD en la sesión.",
+        400
       );
     }
 
     const prompt = buildBriefingPrompt(
       session.cvText,
       session.jdText,
-      session.companyData || "No se pudo obtener informacion de la empresa.",
+      session.companyData || "No se pudo obtener información de la empresa.",
       session.interviewerData || undefined
     );
 
@@ -59,26 +68,10 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ data: briefing, error: null });
+    return apiResponse(briefing);
   } catch (err) {
-    console.error("Error generating briefing:", err);
-
-    // Try to update session status to error
-    try {
-      const body = await req.clone().json();
-      if (body.sessionId) {
-        await prisma.session.update({
-          where: { id: body.sessionId },
-          data: { status: "error" },
-        });
-      }
-    } catch {
-      // ignore
-    }
-
-    return NextResponse.json(
-      { data: null, error: "Error al generar el briefing." },
-      { status: 500 }
-    );
+    return handleApiError(err, "generate", {
+      expose: "Error al generar el briefing.",
+    });
   }
 }

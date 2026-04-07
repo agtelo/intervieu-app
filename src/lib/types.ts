@@ -119,6 +119,12 @@ export interface ChatMessage {
   content: string;
 }
 
+export interface Message {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+}
+
 export interface ApiResponse<T> {
   data: T | null;
   error: string | null;
