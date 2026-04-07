@@ -1,56 +1,86 @@
-import { streamText } from "ai";
-import { groq } from "@ai-sdk/groq";
-import { chatSchema, safeParseBody } from "@/lib/validation";
-import { apiResponse, handleApiError } from "@/lib/api-utils";
+import { streamGroq } from "@/lib/groq";
 
 export async function POST(req: Request) {
   try {
-    // Parse and validate input
-    const parseResult = await safeParseBody(req, chatSchema);
-    if (!parseResult.success) {
-      return apiResponse(null, parseResult.error, 400);
+    const body = await req.json();
+    const { messages, systemPrompt } = body;
+
+    if (!messages || !systemPrompt) {
+      return new Response(
+        JSON.stringify({ data: null, error: "Faltan datos para el chat." }),
+        { status: 400, headers: { "Content-Type": "application/json" } }
+      );
     }
 
-    const { messages, systemPrompt } = parseResult.data;
+    // Build conversation context from messages
+    const conversationContext = messages
+      .map((m: { role: string; content: string }) => {
+        const role = m.role === "user" ? "User" : "Assistant";
+        return `${role}: ${m.content}`;
+      })
+      .join("\n");
 
-    const result = streamText({
-      model: groq("llama-3.3-70b-versatile"),
-      system: systemPrompt,
-      messages: messages.map((m: { role: string; content: string }) => ({
-        role: m.role as "user" | "assistant",
-        content: m.content,
-      })),
-    });
+    const fullPrompt = `${conversationContext}\n\nAssistant:`;
 
-    // Stream the result as readable stream
-    const encoder = new TextEncoder();
-    const customStream = new ReadableStream({
+    const readableStream = new ReadableStream({
       async start(controller) {
+        const encoder = new TextEncoder();
+        let isClosed = false;
+
         try {
-          for await (const chunk of result.fullStream) {
-            if (chunk.type === "text-delta") {
-              controller.enqueue(
-                encoder.encode(`data: ${JSON.stringify({ text: chunk.text })}\n\n`)
-              );
+          // Use streaming from Groq
+          const response = streamGroq(fullPrompt, systemPrompt);
+
+          for await (const chunk of response) {
+            if (isClosed) break;
+            if (chunk.response) {
+              try {
+                controller.enqueue(
+                  encoder.encode(
+                    `data: ${JSON.stringify({ text: chunk.response })}\n\n`
+                  )
+                );
+              } catch (e) {
+                if ((e as any)?.code === "ERR_INVALID_STATE") {
+                  isClosed = true;
+                  break;
+                }
+                throw e;
+              }
             }
           }
-          controller.close();
-        } catch (err) {
-          controller.error(err);
+
+          if (!isClosed) {
+            controller.enqueue(encoder.encode("data: [DONE]\n\n"));
+            controller.close();
+            isClosed = true;
+          }
+        } catch (error) {
+          console.error("Stream error:", error);
+          if (!isClosed) {
+            try {
+              controller.error(error);
+            } catch (e) {
+              // Controller already closed
+            }
+            isClosed = true;
+          }
         }
       },
     });
 
-    return new Response(customStream, {
+    return new Response(readableStream, {
       headers: {
         "Content-Type": "text/event-stream",
         "Cache-Control": "no-cache",
-        "Connection": "keep-alive",
+        Connection: "keep-alive",
       },
     });
   } catch (err) {
-    return handleApiError(err, "chat", {
-      expose: "Error al procesar el chat.",
-    });
+    console.error("Error in chat:", err);
+    return new Response(
+      JSON.stringify({ data: null, error: "Error en el chat." }),
+      { status: 500, headers: { "Content-Type": "application/json" } }
+    );
   }
 }

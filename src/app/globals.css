@@ -163,15 +163,6 @@
   }
 }
 
-/* Hidden scrollbar */
-.scrollbar-hide {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
-.scrollbar-hide::-webkit-scrollbar {
-  display: none;
-}
-
 /* Accent glow effect */
 .glow-teal {
   box-shadow: 0 0 20px rgba(20, 184, 166, 0.15), 0 0 40px rgba(20, 184, 166, 0.05);
@@ -210,7 +201,6 @@
     transform: translateY(1px);
   }
 
-  /* Primary button - Teal CTA */
   .btn-primary {
     background-color: var(--color-teal);
     color: white;
@@ -221,7 +211,6 @@
     box-shadow: 0 25px 50px -12px rgba(20, 184, 166, 0.4);
   }
 
-  /* Large primary - for hero/prominent CTAs */
   .btn-primary-lg {
     padding: 1rem 2rem;
     font-size: 1.125rem;
@@ -230,11 +219,9 @@
   @media (max-width: 640px) {
     .btn-primary-lg {
       font-size: 1rem;
-      padding: 0.875rem 1.5rem;
     }
   }
 
-  /* Secondary button - surface with border */
   .btn-secondary {
     background-color: var(--color-surface);
     border: 1px solid var(--color-border);
@@ -250,12 +237,12 @@
   .input-base {
     width: 100%;
     background-color: var(--color-surface);
-    border: 1px solid rgba(30, 30, 36, 0.5);
+    border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
     color: var(--color-text);
-    transition: border-color 200ms;
-    cursor: text;
+    transition: all 200ms;
+    cursor: pointer;
   }
 
   .input-base::placeholder {
@@ -263,20 +250,20 @@
   }
 
   .input-base:focus {
-    border-color: rgba(20, 184, 166, 0.6);
+    border-color: rgba(20, 184, 166, 0.5);
     outline: none;
   }
 
   .textarea-base {
     width: 100%;
     background-color: var(--color-surface);
-    border: 1px solid rgba(30, 30, 36, 0.5);
+    border: 1px solid var(--color-border);
     border-radius: 0.5rem;
     padding: 0.75rem 1rem;
     color: var(--color-text);
-    transition: border-color 200ms;
+    transition: all 200ms;
     resize: none;
-    cursor: text;
+    cursor: pointer;
   }
 
   .textarea-base::placeholder {
@@ -284,7 +271,7 @@
   }
 
   .textarea-base:focus {
-    border-color: rgba(20, 184, 166, 0.6);
+    border-color: rgba(20, 184, 166, 0.5);
     outline: none;
   }
 

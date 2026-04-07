@@ -13,11 +13,6 @@ export const metadata: Metadata = {
   title: "intervU - Preparate para cualquier entrevista con IA",
   description:
     "Subí tu CV y la descripción del puesto. La IA investiga la empresa, analiza tu fit, genera preguntas probables y te ofrece un simulacro de entrevista realista.",
-  icons: {
-    icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-    ],
-  },
 };
 
 export const viewport: Viewport = {
