@@ -71,12 +71,12 @@ export default function Home() {
           <div className="flex gap-4 mb-16 animate-fade-in-up delay-200">
             <Link
               href="/prep"
-              className="group relative btn-primary text-base sm:text-lg focus:focus-ring"
+              className="group relative px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 flex items-center gap-3"
             >
-              <span className="relative z-10 flex items-center gap-3">
+              <span className="relative z-10">
                 Comenzar ahora
-                <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </span>
+              <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-300" />
             </Link>
           </div>
