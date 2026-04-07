@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 
 export async function GET(
@@ -7,7 +6,6 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
     const { id } = await params;
 
     const session = await prisma.session.findUnique({ where: { id } });
@@ -16,14 +14,6 @@ export async function GET(
       return NextResponse.json(
         { data: null, error: "Sesion no encontrada." },
         { status: 404 }
-      );
-    }
-
-    // Verify that the session belongs to the authenticated user
-    if (session.userId && session.userId !== userId) {
-      return NextResponse.json(
-        { data: null, error: "No tienes acceso a esta sesion." },
-        { status: 403 }
       );
     }
 
@@ -42,7 +32,6 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
     const { id } = await params;
     const body = await req.json();
     const { chatMessages, simulacroScore } = body;
@@ -53,14 +42,6 @@ export async function PATCH(
       return NextResponse.json(
         { data: null, error: "Sesion no encontrada." },
         { status: 404 }
-      );
-    }
-
-    // Verify that the session belongs to the authenticated user
-    if (session.userId && session.userId !== userId) {
-      return NextResponse.json(
-        { data: null, error: "No tienes acceso a esta sesion." },
-        { status: 403 }
       );
     }
 
@@ -88,7 +69,6 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await auth();
     const { id } = await params;
 
     const session = await prisma.session.findUnique({ where: { id } });
@@ -97,14 +77,6 @@ export async function DELETE(
       return NextResponse.json(
         { data: null, error: "Sesion no encontrada." },
         { status: 404 }
-      );
-    }
-
-    // Verify that the session belongs to the authenticated user
-    if (session.userId && session.userId !== userId) {
-      return NextResponse.json(
-        { data: null, error: "No tienes acceso a esta sesion." },
-        { status: 403 }
       );
     }
 

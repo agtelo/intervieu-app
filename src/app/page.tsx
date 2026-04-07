@@ -1,25 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { Search, BarChart3, Mic2, ArrowRight } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 
 export default function Home() {
-  const { isSignedIn, isLoaded } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (isLoaded && isSignedIn) {
-      router.push("/dashboard");
-    }
-  }, [isLoaded, isSignedIn, router]);
-
-  if (isLoaded && isSignedIn) {
-    return null;
-  }
 
   return (
     <main className="flex-1 flex flex-col overflow-hidden">

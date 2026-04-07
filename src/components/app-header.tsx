@@ -2,14 +2,13 @@
 
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { UserButton, SignedIn, SignedOut } from "@clerk/nextjs";
 
 export function AppHeader() {
   const router = useRouter();
   const pathname = usePathname();
 
   // Determinar si mostrar botón atrás
-  const showBackButton = pathname.startsWith("/prep/[") || pathname.includes("/prep/");
+  const showBackButton = pathname.startsWith("/prep/") || pathname.includes("/prep/");
 
   return (
     <header className="border-b border-border bg-surface/50 backdrop-blur-sm">
@@ -31,62 +30,47 @@ export function AppHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          <SignedIn>
-            <div className="flex items-center gap-3">
-              <Link
-                href="/dashboard"
-                className="p-3 hover:bg-surface-hover rounded-lg transition-colors"
-                title="Dashboard"
-                aria-label="Ver mis sesiones"
+          <div className="flex items-center gap-3">
+            <Link
+              href="/dashboard"
+              className="p-3 hover:bg-surface-hover rounded-lg transition-colors"
+              title="Dashboard"
+              aria-label="Ver mis sesiones"
+            >
+              <svg
+                className="w-5 h-5 text-text-muted hover:text-text transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
               >
-                <svg
-                  className="w-5 h-5 text-text-muted hover:text-text transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-                  />
-                </svg>
-              </Link>
-              <Link
-                href="/prep"
-                className="p-3 hover:bg-surface-hover rounded-lg transition-colors"
-                title="Nueva entrevista"
-                aria-label="Crear nueva entrevista"
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                />
+              </svg>
+            </Link>
+            <Link
+              href="/prep"
+              className="p-3 hover:bg-surface-hover rounded-lg transition-colors"
+              title="Nueva entrevista"
+              aria-label="Crear nueva entrevista"
+            >
+              <svg
+                className="w-5 h-5 text-text-muted hover:text-text transition-colors"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2.5}
               >
-                <svg
-                  className="w-5 h-5 text-text-muted hover:text-text transition-colors"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 4v16m8-8H4"
-                  />
-                </svg>
-              </Link>
-            </div>
-          </SignedIn>
-          <div>
-            <SignedIn>
-              <UserButton afterSignOutUrl="/" />
-            </SignedIn>
-            <SignedOut>
-              <Link
-                href="/sign-in"
-                className="text-sm text-text-muted hover:text-text transition-colors"
-              >
-                Sign in
-              </Link>
-            </SignedOut>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+            </Link>
           </div>
         </div>
       </div>

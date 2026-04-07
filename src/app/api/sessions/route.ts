@@ -1,20 +1,9 @@
 import { NextResponse } from "next/server";
-import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json(
-        { data: null, error: "No autenticado." },
-        { status: 401 }
-      );
-    }
-
     const sessions = await prisma.session.findMany({
-      where: { userId },
       orderBy: { createdAt: "desc" },
       select: {
         id: true,
@@ -39,8 +28,6 @@ export async function GET(req: Request) {
 
 export async function POST(req: Request) {
   try {
-    const { userId } = await auth();
-
     const body = await req.json();
     const {
       cvText,
@@ -62,7 +49,7 @@ export async function POST(req: Request) {
     const session = await prisma.session.create({
       data: {
         status: "processing",
-        userId: userId || null,
+        userId: null,
         cvText,
         cvFileName,
         jdText,
