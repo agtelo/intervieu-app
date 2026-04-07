@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useAuth } from "@clerk/nextjs";
-import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { AlertCircle, FileText } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
@@ -19,21 +17,12 @@ interface Session {
 }
 
 export default function DashboardPage() {
-  const { isSignedIn, isLoaded } = useAuth();
-  const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (!isLoaded) return;
-
-    if (!isSignedIn) {
-      router.push("/sign-in");
-      return;
-    }
-
     const fetchSessions = async () => {
       try {
         setLoading(true);
@@ -55,7 +44,7 @@ export default function DashboardPage() {
     };
 
     fetchSessions();
-  }, [isLoaded, isSignedIn, router]);
+  }, []);
 
   const handleDeleteSession = (id: string) => {
     setDeletingIds((prev) => new Set(prev).add(id));
@@ -68,10 +57,6 @@ export default function DashboardPage() {
       });
     }, 300);
   };
-
-  if (!isLoaded || !isSignedIn) {
-    return null;
-  }
 
   return (
     <>

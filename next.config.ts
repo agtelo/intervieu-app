@@ -1,8 +1,12 @@
 import type { NextConfig } from "next";
 import { resolve } from "path";
 
-const dbPath = resolve(process.cwd(), "prisma/dev.db");
-const dbUrl = `file:${dbPath}`;
+let dbUrl = process.env.DATABASE_URL;
+
+if (!dbUrl) {
+  const dbPath = resolve(process.cwd(), "prisma/dev.db");
+  dbUrl = `file:${dbPath}`;
+}
 
 const nextConfig: NextConfig = {
   env: {
