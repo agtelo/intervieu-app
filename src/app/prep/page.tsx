@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { AlertCircle } from "lucide-react";
 import { FileUpload } from "@/components/file-upload";
 import { ProcessingLoader } from "@/components/processing-loader";
 import { AppHeader } from "@/components/app-header";
@@ -363,7 +364,7 @@ export default function PrepPage() {
               <div className="absolute inset-0 bg-gradient-to-br from-red/15 via-red/5 to-transparent blur-xl" />
               <div className="relative bg-gradient-to-br from-red/8 to-surface/50 backdrop-blur-sm p-6">
                 <div className="flex items-start gap-4">
-                  <span className="text-2xl flex-shrink-0 mt-0.5">⚠️</span>
+                  <AlertCircle className="w-6 h-6 text-red flex-shrink-0 mt-0.5" />
                   <div className="flex-1">
                     <p className="text-red font-black text-sm mb-1">Error</p>
                     <p className="text-text-muted text-sm leading-relaxed">{error}</p>
