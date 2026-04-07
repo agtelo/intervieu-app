@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 interface FileUploadProps {
   accept: string;
@@ -41,12 +42,12 @@ export function FileUpload({
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
-      className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-surface focus-within:ring-ring min-h-32 sm:min-h-40 flex items-center justify-center ${
+      className={`relative border-2 border-dashed rounded-xl p-6 text-center cursor-pointer transition-all duration-200 min-h-32 sm:min-h-40 flex items-center justify-center ${
         isDragging
           ? "border-teal bg-teal/5 shadow-lg shadow-teal/10"
           : fileName
             ? "border-green/50 bg-green/5"
-            : "border-border hover:border-border-light hover:bg-surface/50"
+            : "border-border hover:border-border hover:bg-surface/50"
       }`}
     >
       <input

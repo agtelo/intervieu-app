@@ -2,6 +2,9 @@
 
 import { useState, useEffect, useRef } from "react";
 import { Mic2, Check } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { BriefingResult } from "@/lib/types";
 
 export function SimulacroTab({
@@ -112,7 +115,17 @@ export function SimulacroTab({
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col bg-background lg:relative lg:inset-auto lg:rounded-2xl lg:border lg:border-teal/20 animate-fade-in overflow-hidden">
+    <div className="fixed inset-0 flex flex-col bg-background lg:relative lg:inset-auto lg:rounded-2xl lg:border lg:border-teal/20 lg:h-[600px] animate-fade-in overflow-hidden">
+      {/* Error announcements for screen readers */}
+      <div
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        className="sr-only"
+      >
+        {messages.find(m => m.content.includes("Lo siento")) && "Error: " + messages.find(m => m.content.includes("Lo siento"))?.content}
+      </div>
+
       {/* Header - Fixed */}
       <div className="flex-shrink-0 px-5 py-6 sm:px-8 sm:py-8 border-b border-teal/20 bg-gradient-to-r from-surface/80 via-surface/60 to-teal/5 backdrop-blur-sm">
         <div className="flex items-start gap-4 mb-4">
@@ -131,36 +144,43 @@ export function SimulacroTab({
         </p>
       </div>
 
-      {/* Messages - Scrollable with invisible scrollbar */}
-      <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-4 scrollbar-hidden">
+      {/* Messages - Scrollable with styled scrollbar */}
+      <div className="flex-1 overflow-y-auto p-5 sm:p-8 space-y-4 messages-scroll">
         {messages.map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} animate-fade-in w-full`}>
-            <div
-              className={`w-full sm:max-w-2xl px-5 sm:px-6 py-4 rounded-2xl transition-all duration-300 ${
+            <article
+              role="article"
+              aria-label={msg.role === "assistant" ? "Respuesta del entrevistador" : "Tu respuesta"}
+              className={`w-full max-w-lg sm:max-w-2xl px-5 sm:px-6 py-4 rounded-2xl transition-all duration-300 ${
                 msg.role === "assistant"
-                  ? "bg-surface border border-teal/20 text-text shadow-md shadow-teal/5 hover:border-teal/40 hover:bg-surface/95"
-                  : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-lg shadow-teal/30"
+                  ? "bg-surface border border-teal/20 text-text shadow-md shadow-teal/5 hover:shadow-lg hover:shadow-teal/20"
+                  : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-lg shadow-teal/30 hover:shadow-xl hover:shadow-teal/40"
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap font-light break-words">
                 {msg.content}
               </p>
-            </div>
+            </article>
           </div>
         ))}
 
         {loading && (
-          <div className="flex justify-start w-full">
+          <div
+            className="flex justify-start w-full"
+            role="status"
+            aria-live="polite"
+            aria-label="Esperando respuesta del entrevistador"
+          >
             <div className="bg-surface border border-teal/20 px-6 py-4 rounded-2xl shadow-md shadow-teal/5">
-              <div className="flex gap-2">
-                <div className="w-2.5 h-2.5 rounded-full bg-teal animate-bounce" />
+              <div className="flex gap-2 items-center">
+                <div className="w-2 h-2 rounded-full bg-teal animate-pulse" />
                 <div
-                  className="w-2.5 h-2.5 rounded-full bg-teal animate-bounce"
-                  style={{ animationDelay: "0.1s" }}
+                  className="w-2 h-2 rounded-full bg-teal animate-pulse"
+                  style={{ animationDelay: "0.2s" }}
                 />
                 <div
-                  className="w-2.5 h-2.5 rounded-full bg-teal animate-bounce"
-                  style={{ animationDelay: "0.2s" }}
+                  className="w-2 h-2 rounded-full bg-teal animate-pulse"
+                  style={{ animationDelay: "0.4s" }}
                 />
               </div>
             </div>
@@ -175,30 +195,37 @@ export function SimulacroTab({
         className="flex-shrink-0 p-5 sm:p-8 border-t border-teal/20 bg-gradient-to-t from-surface/95 via-surface/60 to-teal/5 backdrop-blur-sm"
       >
         <div className="flex gap-3 items-end">
-          <textarea
-            ref={textareaRef}
-            value={input}
-            onChange={(e) => setInput(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                handleSubmit(e as unknown as React.FormEvent);
-              }
-            }}
-            placeholder="Tu respuesta aquí... (Shift+Enter para nueva línea)"
-            disabled={loading}
-            className="flex-1 px-5 py-3 bg-surface border border-teal/20 rounded-xl focus:border-teal/50 focus:outline-none focus:ring-1 focus:ring-teal/20 text-text placeholder:text-text-muted disabled:opacity-50 transition-all duration-300 font-light resize-none max-h-36 overflow-y-auto scrollbar-hidden"
-            rows={1}
-          />
-          <button
+          <div className="flex-1">
+            <Textarea
+              ref={textareaRef}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSubmit(e as unknown as React.FormEvent);
+                }
+              }}
+              placeholder="Tu respuesta aquí..."
+              disabled={loading}
+              aria-label="Campo de respuesta para el entrevistador"
+              className="max-h-36 resize-none font-light"
+              rows={1}
+            />
+            <p className="text-xs text-text-muted mt-2 font-light">
+              Presiona Enter para enviar · Shift+Enter para nueva línea
+            </p>
+          </div>
+          <Button
             type="submit"
             disabled={loading || !input.trim()}
-            className="group relative flex-shrink-0 w-11 h-11 bg-gradient-to-r from-teal via-teal to-teal/70 text-white rounded-lg overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-teal/60 hover:scale-110 active:scale-95 disabled:opacity-50 disabled:hover:shadow-none disabled:hover:scale-100 flex items-center justify-center"
+            size="icon"
+            className="flex-shrink-0"
             title="Enviar respuesta (Enter)"
+            aria-label="Enviar respuesta"
           >
-            <Check className="w-5 h-5 relative z-10" />
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-500 disabled:hidden" />
-          </button>
+            <Check className="w-5 h-5" />
+          </Button>
         </div>
       </form>
 
@@ -218,13 +245,52 @@ export function SimulacroTab({
           animation: fadeInUp 0.6s ease-out forwards;
         }
 
-        /* Invisible scrollbar */
-        .scrollbar-hidden::-webkit-scrollbar {
-          display: none;
+        /* Styled scrollbar for messages */
+        .messages-scroll::-webkit-scrollbar {
+          width: 6px;
         }
-        .scrollbar-hidden {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
+        .messages-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .messages-scroll::-webkit-scrollbar-thumb {
+          background-color: rgba(20, 184, 166, 0.4);
+          border-radius: 3px;
+          transition: background-color 0.2s ease;
+        }
+        .messages-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(20, 184, 166, 0.6);
+        }
+
+        /* Firefox scrollbar */
+        .messages-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(20, 184, 166, 0.4) transparent;
+        }
+        .messages-scroll:hover {
+          scrollbar-color: rgba(20, 184, 166, 0.6) transparent;
+        }
+
+        /* Input textarea scrollbar - even more minimal */
+        .input-scroll::-webkit-scrollbar {
+          width: 4px;
+        }
+        .input-scroll::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        .input-scroll::-webkit-scrollbar-thumb {
+          background-color: rgba(20, 184, 166, 0.3);
+          border-radius: 2px;
+        }
+        .input-scroll::-webkit-scrollbar-thumb:hover {
+          background-color: rgba(20, 184, 166, 0.5);
+        }
+
+        .input-scroll {
+          scrollbar-width: thin;
+          scrollbar-color: rgba(20, 184, 166, 0.3) transparent;
+        }
+        .input-scroll:hover {
+          scrollbar-color: rgba(20, 184, 166, 0.5) transparent;
         }
       `}</style>
     </div>

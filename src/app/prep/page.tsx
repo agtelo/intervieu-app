@@ -1,8 +1,12 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import { AlertCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { FileUpload } from "@/components/file-upload";
 import { ProcessingLoader } from "@/components/processing-loader";
 import { AppHeader } from "@/components/app-header";
@@ -14,6 +18,7 @@ interface ProcessingStep {
 
 export default function PrepPage() {
   const router = useRouter();
+  const { isLoaded, isSignedIn } = useUser();
   const [cvFile, setCvFile] = useState<File | null>(null);
   const [jdText, setJdText] = useState("");
   const [jdFile, setJdFile] = useState<File | null>(null);
@@ -24,6 +29,13 @@ export default function PrepPage() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState("");
   const [steps, setSteps] = useState<ProcessingStep[]>([]);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/");
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   const updateStep = (index: number, status: ProcessingStep["status"]) => {
     setSteps((prev) =>
@@ -249,7 +261,7 @@ export default function PrepPage() {
               </span>
             </h1>
             <p className="text-lg text-text-muted max-w-2xl leading-relaxed font-light">
-              Subi tus documentos y datos para generar tu briefing personalizado
+              Subí tus documentos y datos para generar tu briefing personalizado
             </p>
           </div>
 
@@ -261,7 +273,7 @@ export default function PrepPage() {
             </label>
             <FileUpload
               accept=".pdf,.txt"
-              label="Arrastra tu CV aca o hace click para subir"
+              label="Arrastra tu CV acá o hace click para subir"
               onFileSelect={setCvFile}
               fileName={cvFile?.name}
             />
@@ -270,23 +282,23 @@ export default function PrepPage() {
           {/* JD */}
           <div>
             <label className="section-label block mb-3">
-              Job Description *
+              Descripción del trabajo *
             </label>
             <div className="gap-md flex flex-col">
-              <textarea
+              <Textarea
                 value={jdText}
                 onChange={(e) => {
                   setJdText(e.target.value);
                   if (e.target.value) setJdFile(null);
                 }}
-                placeholder="Pega la descripcion del puesto aca..."
-                rows={6}
-                className="textarea-base focus-ring"
+                placeholder="Pega la descripción del puesto acá..."
+                rows={10}
+                className="min-h-64"
               />
               <div className="text-center text-text-dim text-xs">o</div>
               <FileUpload
                 accept=".pdf,.txt"
-                label="Subi la JD como archivo"
+                label="Subí la JD como archivo"
                 onFileSelect={(file) => {
                   setJdFile(file);
                   setJdText("");
@@ -301,18 +313,17 @@ export default function PrepPage() {
             <label className="section-label block mb-3">
               URL de la empresa *
             </label>
-            <input
+            <Input
               type="text"
               value={companyUrl}
               onChange={(e) => setCompanyUrl(e.target.value)}
               placeholder="empresa.com"
-              className="input-base focus-ring"
             />
           </div>
 
           {/* Interviewer section */}
-          <div className="relative overflow-hidden rounded-2xl border border-teal/20 bg-gradient-to-br from-teal/8 via-surface to-surface/95 p-6 animate-fade-in-up delay-100">
-            <div className="absolute inset-0 bg-gradient-to-br from-teal/10 to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300 -z-10" />
+          <div className="relative overflow-hidden rounded-2xl border border-teal/15 bg-surface/30 p-6 animate-fade-in-up delay-100">
+            <div className="absolute inset-0 -z-10" />
 
             <div className="mb-6">
               <span className="section-label text-teal/60">Entrevistador</span>
@@ -323,24 +334,22 @@ export default function PrepPage() {
                 <label className="text-sm text-text-muted block mb-1.5">
                   Email
                 </label>
-                <input
+                <Input
                   type="email"
                   value={interviewerEmail}
                   onChange={(e) => setInterviewerEmail(e.target.value)}
                   placeholder="nombre@empresa.com"
-                  className="input-base focus-ring"
                 />
               </div>
               <div>
                 <label className="text-sm text-text-muted block mb-1.5">
                   LinkedIn
                 </label>
-                <input
+                <Input
                   type="text"
                   value={interviewerLinkedin}
                   onChange={(e) => setInterviewerLinkedin(e.target.value)}
                   placeholder="linkedin.com/in/..."
-                  className="input-base focus-ring"
                 />
               </div>
             </div>
@@ -348,12 +357,11 @@ export default function PrepPage() {
               <label className="text-sm text-text-muted block mb-1.5">
                 Cargo
               </label>
-              <input
+              <Input
                 type="text"
                 value={interviewerRole}
                 onChange={(e) => setInterviewerRole(e.target.value)}
                 placeholder="Ej: Head of Sales, CTO, HR Manager"
-                className="input-base focus-ring"
               />
             </div>
           </div>
@@ -375,16 +383,14 @@ export default function PrepPage() {
           )}
 
           {/* Submit */}
-          <button
+          <Button
             type="submit"
             disabled={isProcessing}
-            className="group relative w-full btn-primary-lg text-lg disabled:opacity-50 disabled:cursor-not-allowed focus:focus-ring animate-fade-in-up delay-100"
+            className="w-full text-lg animate-fade-in-up delay-100"
+            size="lg"
           >
-            <span className="relative z-10">
-              Analizar y preparar briefing
-            </span>
-            <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-300" />
-          </button>
+            Analizar y preparar briefing
+          </Button>
         </form>
         </div>
       </div>

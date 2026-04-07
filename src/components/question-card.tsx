@@ -1,14 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import { ChevronDown } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import type { Pregunta } from "@/lib/types";
 
-const categoryColors: Record<string, string> = {
-  competencia: "text-teal bg-teal/10 border-teal/20",
-  situacional: "text-blue bg-blue/10 border-blue/20",
-  motivacion: "text-green bg-green/10 border-green/20",
-  tecnica: "text-amber bg-amber/10 border-amber/20",
-  mercado: "text-red bg-red/10 border-red/20",
+const categoryVariants: Record<string, any> = {
+  competencia: "default",
+  situacional: "secondary",
+  motivacion: "outline",
+  tecnica: "destructive",
+  mercado: "secondary",
 };
 
 const categoryLabels: Record<string, string> = {
@@ -27,14 +30,13 @@ export function QuestionCard({
   index: number;
 }) {
   const [isOpen, setIsOpen] = useState(false);
-  const colorClass =
-    categoryColors[pregunta.categoria] || categoryColors.competencia;
+  const variant = categoryVariants[pregunta.categoria] || categoryVariants.competencia;
 
   return (
-    <div className="bg-surface border border-border rounded-xl overflow-hidden focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-offset-surface focus-within:ring-ring transition-all duration-200">
+    <Card className="overflow-hidden">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full text-left p-4 flex items-start gap-3 hover:border-accent hover:bg-surface/80 transition-colors cursor-pointer"
+        className="w-full text-left p-4 flex items-start gap-3 hover:bg-surface/80 transition-colors cursor-pointer"
       >
         <span className="font-mono text-sm text-text-dim flex-shrink-0 mt-0.5">
           {String(index + 1).padStart(2, "0")}
@@ -44,35 +46,23 @@ export function QuestionCard({
             {pregunta.pregunta}
           </p>
           <div className="mt-2">
-            <span
-              className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-mono font-semibold uppercase tracking-wider border ${colorClass}`}
-            >
+            <Badge variant={variant} className="text-xs uppercase tracking-wider">
               {categoryLabels[pregunta.categoria] || pregunta.categoria}
-            </span>
+            </Badge>
           </div>
         </div>
-        <svg
+        <ChevronDown
           className={`w-5 h-5 text-text-dim flex-shrink-0 transition-transform ${isOpen ? "rotate-180" : ""}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          strokeWidth={2}
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            d="M19 9l-7 7-7-7"
-          />
-        </svg>
+        />
       </button>
       {isOpen && (
-        <div className="px-4 pb-4 pl-11">
-          <div className="bg-teal/5 border border-teal/10 rounded-lg p-3">
+        <div className="px-4 pb-4 pl-11 border-t border-border">
+          <div className="bg-teal/5 border border-teal/10 rounded-lg p-3 mt-4">
             <p className="section-label mb-1">Tip</p>
             <p className="text-text-muted text-sm">{pregunta.tip}</p>
           </div>
         </div>
       )}
-    </div>
+    </Card>
   );
 }

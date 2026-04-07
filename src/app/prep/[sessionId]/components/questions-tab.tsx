@@ -112,8 +112,8 @@ export function QuestionsTab({ preguntas }: { preguntas: Pregunta[] }) {
 
           return (
             <div key={category}>
-              <div className="flex items-center gap-3 mb-5">
-                <div className={`text-${config.color}`}>{getCategoryIcon(config.icon)}</div>
+              <div className="flex items-start gap-3 mb-5">
+                <div className={`text-${config.color} mt-1 flex-shrink-0`}>{getCategoryIcon(config.icon)}</div>
                 <div>
                   <h2 className="text-xl font-black">{config.label}</h2>
                   <p className="text-xs text-text-muted font-mono">

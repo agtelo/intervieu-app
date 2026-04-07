@@ -2,7 +2,10 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Trash2 } from "lucide-react";
+import { X } from "lucide-react";
+import { Card } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 
 interface SessionCardProps {
   id: string;
@@ -79,17 +82,6 @@ export default function SessionCard({
     return "○ Pendiente";
   };
 
-  const getSimulacroStatusColor = () => {
-    if (simulacroStatus === "completed") return "text-green bg-green/10";
-    if (simulacroStatus === "in_progress") return "text-amber bg-amber/10";
-    return "text-text-muted bg-text-dim/10";
-  };
-
-  const getSimulacroStatusBorder = () => {
-    if (simulacroStatus === "completed") return "border-green/20";
-    if (simulacroStatus === "in_progress") return "border-amber/20";
-    return "border-text-dim/20";
-  };
 
   return (
     <Link href={`/prep/${id}`} className="group h-full focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring rounded-2xl">
@@ -103,20 +95,16 @@ export default function SessionCard({
         <div className="p-6 h-full flex flex-col gap-4 relative z-10">
           {/* Delete Button */}
           {onDelete && (
-            <button
+            <Button
               onClick={handleDeleteClick}
               onBlur={() => { if (deleteStage === "confirming") setDeleteStage("idle"); }}
               disabled={deleteStage === "deleting"}
               aria-label={deleteStage === "confirming" ? "Confirmar eliminación" : "Eliminar sesión"}
+              variant={deleteStage === "idle" ? "outline" : "destructive"}
+              size="sm"
               className={`
-                absolute top-3 right-3 z-20 flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
-                text-xs font-bold uppercase tracking-widest
-                transition-all duration-200 cursor-pointer
-                disabled:opacity-50 disabled:cursor-not-allowed
-                ${deleteStage === "idle"
-                  ? "opacity-0 group-hover:opacity-100 bg-surface/80 border border-border text-text-muted hover:bg-red/10 hover:border-red/30 hover:text-red"
-                  : "opacity-100 bg-red/10 border border-red/40 text-red hover:bg-red/20"
-                }
+                absolute top-3 right-3 z-20
+                ${deleteStage === "idle" && "opacity-0 group-hover:opacity-100"}
               `}
             >
               {deleteStage === "deleting" ? (
@@ -125,11 +113,11 @@ export default function SessionCard({
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
                 </svg>
               ) : (
-                <Trash2 className="w-3.5 h-3.5" />
+                <X className="w-3.5 h-3.5" />
               )}
-              {deleteStage === "confirming" && <span>Confirmar</span>}
-              {deleteStage === "deleting" && <span>Eliminando...</span>}
-            </button>
+              {deleteStage === "confirming" && <span className="ml-1">Confirmar</span>}
+              {deleteStage === "deleting" && <span className="ml-1">Eliminando...</span>}
+            </Button>
           )}
 
           {/* Header */}
@@ -170,11 +158,16 @@ export default function SessionCard({
 
           {/* Status badge */}
           <div className="mt-auto pt-2">
-            <div
-              className={`inline-flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold uppercase tracking-widest border transition-all duration-300 ${getSimulacroStatusColor()} ${getSimulacroStatusBorder()} group-hover:border-opacity-100 group-hover:shadow-lg`}
+            <Badge
+              variant={
+                simulacroStatus === "completed" ? "default" :
+                simulacroStatus === "in_progress" ? "secondary" :
+                "outline"
+              }
+              className="text-xs font-bold uppercase tracking-widest"
             >
               {getSimulacroStatusLabel()}
-            </div>
+            </Badge>
           </div>
         </div>
       </div>

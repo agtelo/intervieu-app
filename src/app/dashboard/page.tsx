@@ -1,8 +1,11 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useUser } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
-import { AlertCircle, FileText } from "lucide-react";
+import { AlertCircle, FileText, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import { AppHeader } from "@/components/app-header";
 import SessionCard from "@/components/session-card";
 
@@ -17,10 +20,19 @@ interface Session {
 }
 
 export default function DashboardPage() {
+  const { isLoaded, isSignedIn } = useUser();
+  const router = useRouter();
   const [sessions, setSessions] = useState<Session[]>([]);
   const [deletingIds, setDeletingIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/");
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   useEffect(() => {
     const fetchSessions = async () => {
@@ -85,27 +97,11 @@ export default function DashboardPage() {
                 Revisa todas tus entrevistas practicadas, resultados y progreso en tu preparación
               </p>
             </div>
-            <Link
-              href="/prep"
-              className="group relative px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 whitespace-nowrap lg:self-start flex items-center gap-3"
-            >
-              <span className="relative z-10 flex items-center gap-3">
+            <Link href="/prep" className="lg:self-start">
+              <Button size="lg" className="gap-3">
                 Nueva entrevista
-                <svg
-                  className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2.5}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M13 7l5 5m0 0l-5 5m5-5H6"
-                  />
-                </svg>
-              </span>
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-300" />
+                <ArrowRight className="w-5 h-5" />
+              </Button>
             </Link>
           </div>
         </div>
@@ -153,27 +149,11 @@ export default function DashboardPage() {
                 <p className="text-lg text-text-muted mb-10 max-w-xl mx-auto leading-relaxed font-light">
                   Comienza a practicar tus entrevistas ahora y mejora tu desempeño en cada conversación
                 </p>
-                <Link
-                  href="/prep"
-                  className="group relative px-8 py-4 bg-teal text-white font-bold text-lg rounded-lg overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-teal/40 active:scale-95 inline-flex items-center gap-3"
-                >
-                  <span className="relative z-10 flex items-center gap-3">
+                <Link href="/prep">
+                  <Button size="lg" className="gap-3">
                     Crear primera entrevista
-                    <svg
-                      className="w-5 h-5 group-hover:translate-x-1 transition-transform duration-300"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                      strokeWidth={2.5}
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M13 7l5 5m0 0l-5 5m5-5H6"
-                      />
-                    </svg>
-                  </span>
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-300" />
+                    <ArrowRight className="w-5 h-5" />
+                  </Button>
                 </Link>
               </div>
             </div>

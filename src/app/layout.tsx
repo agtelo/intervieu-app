@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
+import { ClerkProvider } from "@clerk/nextjs";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -12,6 +13,9 @@ export const metadata: Metadata = {
   title: "intervU - Preparate para cualquier entrevista con IA",
   description:
     "Subí tu CV y la descripción del puesto. La IA investiga la empresa, analiza tu fit, genera preguntas probables y te ofrece un simulacro de entrevista realista.",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export const viewport: Viewport = {
@@ -30,11 +34,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="es"
-      className={`${plusJakartaSans.variable} h-full antialiased`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
-    </html>
+    <ClerkProvider afterSignInUrl="/dashboard" afterSignUpUrl="/dashboard">
+      <html
+        lang="es"
+        className={`${plusJakartaSans.variable} h-full antialiased`}
+      >
+        <body className="min-h-full flex flex-col">{children}</body>
+      </html>
+    </ClerkProvider>
   );
 }

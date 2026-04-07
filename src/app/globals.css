@@ -48,7 +48,7 @@
   --color-border-light: #2a2a32;
   --color-text: #e8e8ec;
   --color-text-muted: #b0b0bc;
-  --color-text-dim: #6a6a78;
+  --color-text-dim: #7a7a88;
   --color-teal: #14b8a6;
   --color-teal-glow: rgba(20, 184, 166, 0.15);
   --color-cyan: #06b6d4;
@@ -107,11 +107,9 @@
     line-height: 1.6;
   }
 
-  /* Focus states for accessibility - enhanced */
+  /* Focus states for accessibility - subtle */
   button:focus-visible,
   a:focus-visible,
-  input:focus-visible,
-  textarea:focus-visible,
   select:focus-visible {
     @apply outline-2 outline-offset-2 outline-ring;
     box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.1);
@@ -247,9 +245,10 @@
     color: var(--color-text-dim);
   }
 
-  .input-base:focus {
-    border-color: rgba(20, 184, 166, 0.5);
+  .input-base:focus-visible {
+    border-color: rgba(20, 184, 166, 0.8);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
   }
 
   .textarea-base {
@@ -268,9 +267,10 @@
     color: var(--color-text-dim);
   }
 
-  .textarea-base:focus {
-    border-color: rgba(20, 184, 166, 0.5);
+  .textarea-base:focus-visible {
+    border-color: rgba(20, 184, 166, 0.8);
     outline: none;
+    box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.15);
   }
 
   /* Card base */
@@ -309,6 +309,19 @@
   .py-md { padding-top: 1rem; padding-bottom: 1rem; }
   .py-lg { padding-top: 1.5rem; padding-bottom: 1.5rem; }
   .py-xl { padding-top: 2rem; padding-bottom: 2rem; }
+
+  /* Screen reader only - hide visually but keep in accessibility tree */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+  }
 }
 
 /* Global animations */
@@ -329,13 +342,15 @@
     opacity: 0;
   }
 
-  .delay-150 { animation-delay: 150ms; }
+  /* Animation delay utilities - staggered sequence */
   .delay-100 { animation-delay: 100ms; }
+  .delay-150 { animation-delay: 150ms; }
   .delay-200 { animation-delay: 200ms; }
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
   .delay-600 { animation-delay: 600ms; }
+  .delay-1000 { animation-delay: 1000ms; }
 }
 
 /* Respect user's motion preferences */
@@ -346,5 +361,14 @@
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* Disable component animations for users with motion preferences */
+  .animate-fade-in,
+  .animate-fade-in-up,
+  .animate-bounce,
+  .animate-spin,
+  .animate-pulse {
+    animation: none !important;
   }
 }

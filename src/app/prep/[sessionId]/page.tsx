@@ -1,9 +1,10 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
+import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
-import { Search, BarChart3, HelpCircle, User, Zap } from "lucide-react";
+import { Search, BarChart3, HelpCircle, User, Mic2 } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import type { Session, BriefingResult } from "@/lib/types";
 import { IntelTab } from "./components/intel-tab";
@@ -22,12 +23,21 @@ interface TabConfig {
 
 export default function DashboardPage() {
   const params = useParams();
+  const router = useRouter();
+  const { isLoaded, isSignedIn } = useUser();
   const sessionId = params.sessionId as string;
   const [session, setSession] = useState<Session | null>(null);
   const [briefing, setBriefing] = useState<BriefingResult | null>(null);
   const [activeTab, setActiveTab] = useState<TabId>("intel");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+
+  // Redirect if not authenticated
+  useEffect(() => {
+    if (isLoaded && !isSignedIn) {
+      router.push("/");
+    }
+  }, [isLoaded, isSignedIn, router]);
 
   useEffect(() => {
     const fetchSession = async () => {
@@ -42,7 +52,7 @@ export default function DashboardPage() {
         }
       } catch (err) {
         setError(
-          err instanceof Error ? err.message : "Error al cargar la sesion."
+          err instanceof Error ? err.message : "Error al cargar la sesión."
         );
       } finally {
         setLoading(false);
@@ -65,7 +75,7 @@ export default function DashboardPage() {
       <main className="flex-1 flex items-center justify-center px-5">
         <div className="text-center">
           <p className="text-red text-sm mb-4">
-            {error || "No se encontro el briefing."}
+            {error || "No se encontró el briefing."}
           </p>
           <Link
             href="/prep"
@@ -92,7 +102,7 @@ export default function DashboardPage() {
       case "entrevistador":
         return <User className={iconProps} />;
       case "simulacro":
-        return <Zap className={iconProps} />;
+        return <Mic2 className={iconProps} />;
     }
   };
 
@@ -141,10 +151,10 @@ export default function DashboardPage() {
         {/* Back button */}
         <Link
           href="/prep"
-          className="flex items-center gap-2 text-text-muted text-sm hover:text-teal transition-all duration-300 mb-2 px-3 py-2 rounded-lg hover:bg-teal/10 group"
+          className="flex items-start gap-2 text-text-muted text-sm hover:text-teal transition-all duration-300 mb-2 px-3 py-2 rounded-lg hover:bg-teal/10 group"
         >
           <svg
-            className="w-4 h-4 group-hover:-translate-x-1 transition-transform"
+            className="w-4 h-4 group-hover:-translate-x-1 transition-transform flex-shrink-0 mt-0.5"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -156,7 +166,7 @@ export default function DashboardPage() {
               d="M15 19l-7-7 7-7"
             />
           </svg>
-          <span className="font-medium">Nueva sesion</span>
+          <span className="font-medium">Nueva sesión</span>
         </Link>
 
         {/* Session info */}
@@ -179,7 +189,7 @@ export default function DashboardPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
-                className={`w-full flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-all duration-300 text-left group relative overflow-hidden ${
+                className={`w-full flex items-start gap-3 px-3 py-3 rounded-lg text-sm font-semibold transition-all duration-300 text-left group relative overflow-hidden ${
                   isActive
                     ? "bg-gradient-to-r from-teal/25 via-teal/15 to-transparent text-teal border border-teal/30 shadow-lg shadow-teal/10"
                     : "text-text-muted hover:text-text border border-transparent hover:bg-teal/8"
@@ -188,10 +198,10 @@ export default function DashboardPage() {
                 {/* Animated background on hover */}
                 <div className="absolute inset-0 bg-gradient-to-r from-teal/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10" />
 
-                <span className="w-6 h-6 flex-shrink-0">{getTabIcon(tab.id)}</span>
+                <span className="w-6 h-6 flex-shrink-0 mt-0.5">{getTabIcon(tab.id)}</span>
                 <span className="flex-1">{tab.label}</span>
                 {isActive && (
-                  <span className="flex-shrink-0 w-2 h-2 rounded-full bg-teal animate-pulse" />
+                  <span className="flex-shrink-0 w-2 h-2 rounded-full bg-teal animate-pulse mt-1" />
                 )}
               </button>
             );
