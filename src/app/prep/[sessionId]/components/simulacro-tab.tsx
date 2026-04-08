@@ -147,39 +147,52 @@ export function SimulacroTab({
       {/* Messages - Scrollable with styled scrollbar */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-8 space-y-3 sm:space-y-4 messages-scroll">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} animate-fade-in w-full`}>
+          <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} animate-fade-in w-full gap-2`}>
+            {msg.role === "assistant" && (
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-teal/30 flex items-center justify-center mt-1">
+                <div className="w-2 h-2 rounded-full bg-teal" />
+              </div>
+            )}
             <article
               role="article"
               aria-label={msg.role === "assistant" ? "Respuesta del entrevistador" : "Tu respuesta"}
-              className={`w-full max-w-full sm:max-w-lg lg:max-w-2xl px-4 sm:px-6 py-4 rounded-2xl transition-all duration-300 ${
+              className={`w-full max-w-full sm:max-w-lg lg:max-w-2xl px-4 sm:px-6 py-3 rounded-xl transition-all duration-300 ${
                 msg.role === "assistant"
-                  ? "bg-surface border border-teal/20 text-text shadow-md shadow-teal/5 hover:shadow-lg hover:shadow-teal/20"
-                  : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-lg shadow-teal/30 hover:shadow-xl hover:shadow-teal/40"
+                  ? "bg-surface border border-teal/15 text-text shadow-sm shadow-teal/5"
+                  : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-md shadow-teal/20"
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap font-light break-words">
                 {msg.content}
               </p>
             </article>
+            {msg.role === "user" && (
+              <div className="flex-shrink-0 w-5 h-5 rounded-full bg-teal/40 flex items-center justify-center mt-1">
+                <div className="w-1.5 h-1.5 rounded-full bg-white" />
+              </div>
+            )}
           </div>
         ))}
 
         {loading && (
           <div
-            className="flex justify-start w-full"
+            className="flex justify-start w-full gap-2"
             role="status"
             aria-live="polite"
             aria-label="Esperando respuesta del entrevistador"
           >
-            <div className="bg-surface border border-teal/20 px-6 py-4 rounded-2xl shadow-md shadow-teal/5">
-              <div className="flex gap-2 items-center">
-                <div className="w-2 h-2 rounded-full bg-teal animate-pulse" />
+            <div className="flex-shrink-0 w-5 h-5 rounded-full bg-teal/30 flex items-center justify-center mt-1">
+              <div className="w-2 h-2 rounded-full bg-teal" />
+            </div>
+            <div className="bg-surface border border-teal/15 px-4 py-3 rounded-xl shadow-sm shadow-teal/5">
+              <div className="flex gap-1.5 items-center">
+                <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
                 <div
-                  className="w-2 h-2 rounded-full bg-teal animate-pulse"
+                  className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse"
                   style={{ animationDelay: "0.2s" }}
                 />
                 <div
-                  className="w-2 h-2 rounded-full bg-teal animate-pulse"
+                  className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse"
                   style={{ animationDelay: "0.4s" }}
                 />
               </div>
