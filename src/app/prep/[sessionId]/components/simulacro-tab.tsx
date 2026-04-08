@@ -210,14 +210,14 @@ export function SimulacroTab({
                 placeholder="Tu respuesta aquí..."
                 disabled={loading}
                 aria-label="Campo de respuesta para el entrevistador"
-                className="max-h-20 resize-none font-light text-sm leading-snug"
+                className="max-h-32 resize-none font-light text-sm leading-relaxed px-3 py-2 bg-surface border border-border rounded-lg"
                 rows={1}
               />
             </div>
             <Button
               type="submit"
               disabled={loading || !input.trim()}
-              className="flex-shrink-0 h-10 w-10 sm:h-auto sm:w-auto px-3 sm:px-4 py-2 sm:py-2.5 bg-teal hover:bg-teal/90 disabled:bg-teal/50 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 cursor-pointer font-semibold flex items-center justify-center"
+              className="flex-shrink-0 h-10 w-10 sm:h-auto sm:w-auto px-3 sm:px-4 py-2 sm:py-3 bg-teal hover:bg-teal/90 disabled:bg-teal/50 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 cursor-pointer font-semibold flex items-center justify-center whitespace-nowrap"
               title="Enviar respuesta (Enter)"
               aria-label="Enviar respuesta"
             >
