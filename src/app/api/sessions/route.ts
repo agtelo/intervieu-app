@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { sql } from "@/lib/supabase";
+import { db } from "@/lib/db";
 
 export async function GET(req: Request) {
   try {
@@ -13,7 +13,7 @@ export async function GET(req: Request) {
       );
     }
 
-    const sessions = await sql`
+    const sessions = await db`
       SELECT
         id,
         name,
@@ -62,7 +62,7 @@ export async function POST(req: Request) {
 
     const id = crypto.randomUUID();
 
-    await sql`
+    await db`
       INSERT INTO "Session" (
         id,
         status,

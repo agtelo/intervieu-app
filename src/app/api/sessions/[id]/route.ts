@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { sql } from "@/lib/supabase";
+import { db } from "@/lib/db";
 
 export async function GET(
   req: Request,
@@ -10,7 +10,7 @@ export async function GET(
     const { userId } = await auth();
     const { id } = await params;
 
-    const sessions = await sql`
+    const sessions = await db`
       SELECT * FROM "Session" WHERE id = ${id}
     `;
 
@@ -51,7 +51,7 @@ export async function PATCH(
     const body = await req.json();
     const { chatMessages, simulacroScore } = body;
 
-    const sessions = await sql`
+    const sessions = await db`
       SELECT * FROM "Session" WHERE id = ${id}
     `;
 
@@ -72,7 +72,7 @@ export async function PATCH(
       );
     }
 
-    await sql`
+    await db`
       UPDATE "Session"
       SET
         "chatMessages" = ${JSON.stringify(chatMessages)},
@@ -100,7 +100,7 @@ export async function DELETE(
     const { userId } = await auth();
     const { id } = await params;
 
-    const sessions = await sql`
+    const sessions = await db`
       SELECT * FROM "Session" WHERE id = ${id}
     `;
 
@@ -121,7 +121,7 @@ export async function DELETE(
       );
     }
 
-    await sql`DELETE FROM "Session" WHERE id = ${id}`;
+    await db`DELETE FROM "Session" WHERE id = ${id}`;
     return NextResponse.json({ data: { id }, error: null });
   } catch (err) {
     console.error("Error deleting session:", err);
