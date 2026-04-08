@@ -4,11 +4,17 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { UserButton, SignInButton, useUser } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import { useEffect, useState } from "react";
 
 export function AppHeader() {
   const router = useRouter();
   const pathname = usePathname();
   const { isSignedIn } = useUser();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Determinar si mostrar botón atrás
   const showBackButton = pathname.startsWith("/prep/") || pathname.includes("/prep/");
@@ -33,7 +39,7 @@ export function AppHeader() {
           </Link>
         </div>
         <div className="flex items-center gap-4">
-          {isSignedIn && (
+          {mounted && isSignedIn && (
             <div className="flex items-center gap-2">
               <Link href="/dashboard" title="Dashboard">
                 <Button
