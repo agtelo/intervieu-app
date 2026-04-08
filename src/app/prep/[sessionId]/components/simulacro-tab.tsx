@@ -210,7 +210,7 @@ export function SimulacroTab({
                 placeholder="Tu respuesta aquí..."
                 disabled={loading}
                 aria-label="Campo de respuesta para el entrevistador"
-                className="max-h-32 resize-none font-light text-sm leading-relaxed px-3 py-2 bg-surface border border-border rounded-lg"
+                className="max-h-10 resize-none font-light text-sm leading-none px-3 py-2 bg-surface border border-border rounded-lg"
                 rows={1}
               />
             </div>
