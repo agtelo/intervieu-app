@@ -128,8 +128,8 @@ export function SimulacroTab({
 
       {/* Header - Fixed */}
       <div className="flex-shrink-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 border-b border-teal/20 bg-gradient-to-r from-surface/80 via-surface/60 to-teal/5 backdrop-blur-sm">
-        <div className="flex items-start gap-3 sm:gap-4 mb-3 sm:mb-4">
-          <Mic2 className="w-8 sm:w-10 h-8 sm:h-10 text-teal mt-1 flex-shrink-0" />
+        <div className="flex items-end gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <Mic2 className="w-8 sm:w-10 h-8 sm:h-10 text-teal flex-shrink-0" />
           <div className="min-w-0">
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-text leading-tight">
               Simulacro en Vivo
