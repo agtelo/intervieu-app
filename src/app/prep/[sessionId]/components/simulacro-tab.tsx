@@ -219,12 +219,11 @@ export function SimulacroTab({
           <Button
             type="submit"
             disabled={loading || !input.trim()}
-            size="icon"
-            className="flex-shrink-0 h-10 w-10 sm:h-auto sm:w-auto"
+            className="flex-shrink-0 px-4 sm:px-6 py-2 sm:py-3 bg-teal hover:bg-teal/90 disabled:bg-teal/50 disabled:cursor-not-allowed text-white rounded-lg transition-all duration-200 cursor-pointer font-semibold text-sm"
             title="Enviar respuesta (Enter)"
             aria-label="Enviar respuesta"
           >
-            <Send className="w-4 sm:w-5 h-4 sm:h-5" />
+            <Send className="w-5 h-5" />
           </Button>
         </div>
       </form>
