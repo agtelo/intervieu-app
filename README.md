@@ -1,266 +1,267 @@
 # intrevieu
 
-AI-powered interview preparation app. Upload your CV and job description, get company intelligence, match analysis, likely questions, and a live interview simulation powered by Claude.
+Aplicación de preparación para entrevistas laborales potenciada por IA. Carga tu CV y descripción del puesto, obtén inteligencia sobre la empresa, análisis de ajuste, preguntas probables y un simulacro de entrevista en vivo.
 
-## 🎯 What It Does
+## Que es intrevieu
 
-intrevieu analyzes your profile against a job opportunity and prepares you with:
+Analiza tu perfil contra una oportunidad laboral y te prepara con:
 
-1. **Company Intel** – Scrapes company website, extracts key info (product, market, culture, founders)
-2. **Fit Analysis** – Matches your background against job requirements with score breakdown
-3. **Likely Questions** – Generates 8-10 probable interview questions with tips
-4. **Interviewer Profile** – Searches and profiles the actual interviewer (optional)
-5. **Live Simulacro** – AI conducts a realistic interview, gives feedback per competency
+1. **Inteligencia Empresarial** - Raspado del sitio web de la empresa, extrae información clave (producto, mercado, cultura, fundadores)
+2. **Análisis de Ajuste** - Compara tu experiencia con los requisitos del puesto, desglose de puntuación
+3. **Preguntas Probables** - Genera 8-10 preguntas esperadas de entrevista con consejos
+4. **Perfil del Entrevistador** - Busca y perfila al entrevistador (opcional)
+5. **Simulacro en Vivo** - La IA realiza una entrevista realista, da retroalimentación por competencia
 
-## 🛠 Tech Stack
+## Stack Tecnologico
 
-- **Framework**: Next.js 16 (App Router) + TypeScript (strict mode)
-- **UI**: Tailwind CSS 4 + shadcn/ui (dark theme)
-- **AI**: Anthropic Claude API (`claude-sonnet-4-20250514`)
-- **Database**: Prisma 7 + SQLite (via `@libsql/client`)
-- **PDF Parsing**: `pdf-parse` (PDFParse class)
-- **Web Scraping**: `cheerio` + native `fetch`
-- **Real-time**: Server-Sent Events (SSE) for chat streaming
-- **Monitoring**: Vercel Analytics + Speed Insights
-- **Typography**: DM Sans (body) + JetBrains Mono (code/labels)
+- **Framework**: Next.js 16 (App Router) + TypeScript estricto
+- **UI**: Tailwind CSS 4 + shadcn/ui (tema oscuro)
+- **IA**: Groq API (modelo llama-3.3-70b-versatile)
+- **BD**: PostgreSQL + Supabase (cliente postgres)
+- **ORM**: Prisma 7
+- **Autenticación**: Clerk
+- **Scraping**: cheerio + fetch nativa
+- **PDF**: pdf-parse
+- **Monitoreo**: Vercel Analytics + Speed Insights
+- **Tipografia**: DM Sans (cuerpo) + JetBrains Mono (código/etiquetas)
 - **Deploy**: Vercel
 
-## 📋 Prerequisites
+## Requisitos Previos
 
-- Node.js 18+ with npm
-- ANTHROPIC_API_KEY from [console.anthropic.com](https://console.anthropic.com)
+- Node.js 18+
+- GROQ_API_KEY de https://console.groq.com
+- DATABASE_URL de Supabase PostgreSQL
 
-## 🚀 Quick Start
+## Inicio Rapido
 
-1. **Clone and install**
-   ```bash
-   git clone <repo>
-   cd interview-ninja
-   npm install
-   ```
+1. Clonar e instalar
 
-2. **Configure environment**
-   ```bash
-   cp .env.example .env.local
-   ```
-   Add your Anthropic API key:
-   ```
-   ANTHROPIC_API_KEY=sk-ant-...
-   ```
+```bash
+git clone <repo>
+cd interview-ninja
+npm install
+```
 
-3. **Set up database**
-   ```bash
-   npx prisma generate
-   npx prisma migrate dev
-   ```
+2. Configurar variables de entorno
 
-4. **Run dev server**
-   ```bash
-   npm run dev
-   ```
-   Open [http://localhost:3000](http://localhost:3000)
+```bash
+cp .env.example .env.local
+```
 
-## 📁 Project Structure
+Agregar en .env.local:
+
+```
+GROQ_API_KEY=gsk_...
+DATABASE_URL=postgresql://user:password@host:5432/db
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+```
+
+3. Configurar base de datos
+
+```bash
+npx prisma generate
+npx prisma migrate dev
+```
+
+4. Ejecutar servidor de desarrollo
+
+```bash
+npm run dev
+```
+
+Abrir http://localhost:3000
+
+## Estructura del Proyecto
 
 ```
 app/
-├── page.tsx                    # Landing page
+├── page.tsx                         Landing
 ├── prep/
-│   ├── page.tsx                # Interview prep form
+│   ├── page.tsx                     Formulario de preparacion
 │   └── [sessionId]/
-│       ├── page.tsx            # 5-tab dashboard
+│       ├── page.tsx                 Dashboard (5 tabs)
 │       └── components/
-│           ├── intel-tab.tsx   # Company intelligence
-│           ├── fit-tab.tsx     # Candidate-job fit analysis
-│           ├── questions-tab.tsx   # Likely interview questions
-│           ├── interviewer-tab.tsx # Interviewer profile
-│           └── simulacro-tab.tsx   # Live AI interview sim
+│           ├── intel-tab.tsx        Inteligencia empresarial
+│           ├── fit-tab.tsx          Analisis de ajuste
+│           ├── questions-tab.tsx    Preguntas probables
+│           ├── interviewer-tab.tsx  Perfil entrevistador
+│           └── simulacro-tab.tsx    Simulacro en vivo
 └── api/
-    ├── sessions/route.ts       # Create session
-    ├── parse-cv/route.ts       # Extract CV text
-    ├── scrape/route.ts         # Scrape company website
-    ├── search-person/route.ts  # Find interviewer profile
-    ├── generate/route.ts       # Generate interview briefing
-    ├── chat/route.ts           # Streaming chat responses
-    └── score/route.ts          # Final interview score
+    ├── sessions/route.ts           Crear sesion
+    ├── parse-cv/route.ts           Extraer texto CV
+    ├── scrape/route.ts             Raspar sitio empresa
+    ├── search-person/route.ts      Buscar perfil entrevistador
+    ├── generate/route.ts           Generar briefing
+    ├── chat/route.ts               Respuestas streaming
+    └── score/route.ts              Calificar entrevista
 
 lib/
-├── types.ts                    # TypeScript interfaces
-├── prompts.ts                  # Claude system prompts
-├── db.ts                       # Prisma + libsql setup
-├── scraper.ts                  # Web scraping logic
-├── pdf-parser.ts               # PDF text extraction
-└── person-search.ts            # Interviewer search
+├── types.ts                        Interfaces TypeScript
+├── prompts.ts                      Prompts del sistema
+├── groq.ts                         Cliente Groq
+├── supabase.ts                     Cliente Supabase
+├── db.ts                           Conexion PostgreSQL
+├── scraper.ts                      Logica de raspado
+├── pdf-parser.ts                   Extraccion PDF
+└── person-search.ts                Busqueda entrevistador
 
 components/
-├── ui/                         # shadcn/ui components
-├── file-upload.tsx             # Drag & drop file input
-├── processing-loader.tsx       # Step-by-step progress
-├── score-gauge.tsx             # SVG animated score gauge
-├── question-card.tsx           # Expandable question display
-└── app-header.tsx              # Navigation header
+├── ui/                             Componentes shadcn/ui
+├── file-upload.tsx                 Carga arrastrable
+├── processing-loader.tsx           Indicador progreso
+├── score-gauge.tsx                 Grafico puntuacion
+├── question-card.tsx               Tarjeta pregunta
+└── app-header.tsx                  Encabezado navegacion
 ```
 
-## 🎮 User Flow
+## Flujo del Usuario
 
-### 1. Interview Prep Form (`/prep`)
-Upload or paste:
-- **CV** (PDF or plain text) – required
-- **Job Description** (PDF or text) – required
-- **Company URL** – required
-- **Interviewer Email** (optional)
-- **Interviewer LinkedIn** (optional)
+### 1. Formulario de Preparacion (/prep)
 
-Form validates client-side, submits to create a session.
+Carga o pega:
+- CV (PDF o texto) - requerido
+- Descripcion del puesto (PDF o texto) - requerida
+- URL de la empresa - requerida
+- Email del entrevistador (opcional)
+- LinkedIn del entrevistador (opcional)
 
-### 2. Processing Pipeline
-System executes these steps sequentially with progress display:
-1. Parse CV → extract text
-2. Scrape company site → homepage, /about, /pricing
-3. Search interviewer → Claude + web search
-4. Generate briefing → compile all intel into JSON
-5. Save to database → redirect to dashboard
+Valida en cliente, envia a crear sesion.
 
-### 3. Dashboard (`/prep/[sessionId]`)
+### 2. Pipeline de Procesamiento
 
-Five tabs for comprehensive prep:
+Ejecuta en secuencia con indicador de progreso:
+1. Parsear CV - extraer texto
+2. Raspar empresa - homepage, /about, /pricing
+3. Buscar entrevistador - Groq + busqueda web
+4. Generar briefing - compilar inteligencia en JSON
+5. Guardar en BD - redirigir a dashboard
 
-- **Intel**: Company profile (product, market, culture, founding, key facts)
-- **Fit**: Match score (0-100) with strengths/weaknesses + improvement tips
-- **Preguntas**: 8-10 probable questions with tips per question
-- **Entrevistador**: Interviewer profile (if found) + connection tips
-- **Simulacro**: Live AI interview with adaptive questioning + final score
+### 3. Dashboard (/prep/[sessionId])
 
-### 4. Simulacro (Live Interview)
-- AI interviewer asks questions based on your CV, JD, company context
-- You respond in real-time
-- 7-8 question turns
-- Final score breakdown by competency
-- Feedback on strengths and areas to improve
+Cinco tabs de preparacion:
 
-## 📡 API Endpoints
+- **Intel**: Perfil empresa (producto, mercado, cultura, fundacion, hechos clave)
+- **Fit**: Puntuacion ajuste (0-100) con fortalezas/debilidades + consejos
+- **Preguntas**: 8-10 preguntas probables con consejos por pregunta
+- **Entrevistador**: Perfil entrevistador (si existe) + consejos conexion
+- **Simulacro**: Entrevista IA en vivo con puntuacion final
 
-All responses follow `{ data: T | null, error: string | null }` format.
+### 4. Simulacro (Entrevista en Vivo)
 
-| Endpoint | Method | Purpose |
-|----------|--------|---------|
-| `/api/sessions` | POST | Create interview session |
-| `/api/parse-cv` | POST | Extract text from CV (PDF/TXT) |
-| `/api/scrape` | POST | Scrape company website |
-| `/api/search-person` | POST | Find interviewer profile |
-| `/api/generate` | POST | Generate interview briefing JSON |
-| `/api/chat` | POST | Stream interview questions/answers (SSE) |
-| `/api/score` | POST | Calculate final interview score |
+- Entrevistador IA hace preguntas segun CV, JD, contexto empresa
+- Respondes en tiempo real
+- 7-8 rondas de preguntas
+- Puntuacion final desglosado por competencia
+- Retroalimentacion fortalezas y areas mejora
 
-## 🎨 Design System
+## Rutas API
 
-**Dark theme** (Zinc-950 base):
-- Background: `#0a0a0c`
-- Surface (cards): `#111114`
-- Border: `#1e1e24`
-- Text: `#e8e8ec`
-- Accent: `#6c5ce7` (violet)
+Todas responden en formato { data: T | null, error: string | null }
 
-**Responsive**:
-- Mobile-first approach
+| Ruta | Metodo | Proposito |
+|------|--------|-----------|
+| /api/sessions | POST | Crear sesion entrevista |
+| /api/parse-cv | POST | Extraer texto CV (PDF/TXT) |
+| /api/scrape | POST | Raspar sitio empresa |
+| /api/search-person | POST | Buscar perfil entrevistador |
+| /api/generate | POST | Generar briefing JSON entrevista |
+| /api/chat | POST | Stream preguntas/respuestas (SSE) |
+| /api/score | POST | Calcular puntuacion final entrevista |
+
+## Sistema de Diseno
+
+Tema oscuro (base Zinc-950):
+- Fondo: #0a0a0c
+- Superficie (tarjetas): #111114
+- Borde: #1e1e24
+- Texto: #e8e8ec
+- Acento: #6c5ce7 (violeta)
+
+Responsive:
+- Mobile-first
 - Breakpoints: 640px (sm), 768px (md), 1024px (lg)
-- Tabs on mobile, sidebar on desktop
+- Tabs en mobile, sidebar en desktop
 
-## 🚀 Deployment
+## Configuracion
 
-Deploy to Vercel in one click:
+### Variables de Entorno
+
+Crear .env.local:
+
+```
+GROQ_API_KEY=gsk_...
+DATABASE_URL=postgresql://user:password@host/db
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
+CLERK_SECRET_KEY=sk_test_...
+NODE_ENV=development
+```
+
+### Base de Datos
+
+Usa PostgreSQL con Prisma. Para cambiar a otra BD:
+
+1. Actualizar datasource en prisma/schema.prisma
+2. Ejecutar npx prisma migrate deploy
+3. Actualizar DATABASE_URL en .env.local
+
+## Scripts
 
 ```bash
-vercel deploy
+npm run dev            Servidor desarrollo
+npm run build          Build produccion
+npm run start          Servidor produccion
+npm run lint           Ejecutar ESLint
 ```
 
-Or manual setup:
-1. Push to GitHub
-2. Connect repo to Vercel
-3. Add `ANTHROPIC_API_KEY` to environment
-4. Deploy
+## Solucion de Problemas
 
-The app uses Vercel Analytics and Speed Insights automatically.
+**PDF falla al parsear**
+- PDF puede estar corrompido o encriptado
+- Alternativa: pega manualmente texto CV en textarea
 
-## 🔧 Configuration
+**Empresa raspada vacia**
+- No todas webs tienen /about o /pricing
+- Revisar manualmente antes entrevista
 
-### Environment Variables
+**Entrevistador no encontrado**
+- Puede requerir info mas especifica (nombre completo + empresa)
+- Tab perfil es opcional - continua sin el
 
-Create `.env.local`:
-```
-ANTHROPIC_API_KEY=sk-ant-...
-DATABASE_URL=file:./prisma/dev.db
-```
+**Error conexion BD**
+- Verifica DATABASE_URL apunte a PostgreSQL valida
+- Ejecuta npx prisma migrate dev para inicializar
 
-### Database
+## Hoja de Ruta
 
-Uses SQLite with Prisma via libsql adapter. To migrate to PostgreSQL/Supabase:
+Completado
+- Completado: Pipeline core preparacion entrevista
+- Completado: Simulacro en vivo streaming
+- Completado: Raspado empresa + inteligencia
+- Completado: Desglose puntuacion por competencia
+- Completado: Tema oscuro responsive mobile
 
-1. Update `prisma/schema.prisma` datasource
-2. Run `npx prisma migrate deploy`
-3. Update `DATABASE_URL` in `.env.local`
+En Progreso
+- En Progreso: Gestor sesiones (ver/eliminar entrevistas pasadas)
+- En Progreso: Exportar resultados entrevista a PDF
+- En Progreso: Soporte multiidioma
 
-## 📚 Scripts
+Proximamente
+- Programador entrevistas integrado
+- Simulacro video (Synthesia API)
+- Facturacion equipos + comparticion workspace
+- Grabacion y reproduccion entrevista
+- Autenticacion Supabase + equipos
+- Dashboard analitica
 
-```bash
-npm run dev          # Start dev server
-npm run build        # Build for production
-npm run start        # Start production server
-npm run lint         # Run ESLint
-npm run type-check   # Check TypeScript
-```
-
-## ⚠️ Troubleshooting
-
-**PDF parsing fails**
-- PDF file may be corrupted or encrypted
-- Fallback: manually paste CV text into textarea
-
-**Company scraping returns empty**
-- Not all websites have `/about` or `/pricing` pages
-- Manual review recommended before interview
-
-**Interviewer not found**
-- May require more specific search info (full name + company)
-- Profile tab is optional—proceed without it
-
-**Rate limiting**
-- Max 5 sessions per IP per 24 hours (no authentication required)
-
-**Database connection error**
-- Ensure `DATABASE_URL` points to valid SQLite file
-- Run `npx prisma migrate dev` to initialize
-
-## 🗺️ Roadmap
-
-**Completed**
-- ✅ Core interview prep pipeline
-- ✅ Live AI simulacro with streaming
-- ✅ Company scraping + intelligence
-- ✅ Score breakdown by competency
-- ✅ Mobile-responsive dark theme
-
-**In Progress**
-- 🚧 Session management (view/delete past interviews)
-- 🚧 Export interview results as PDF
-- 🚧 Multi-language support
-
-**Coming Soon**
-- 📅 Interview scheduling integration
-- 📅 Video interview simulation (Synthesia API)
-- 📅 Team billing + workspace sharing
-- 📅 Interview recording + playback
-- 📅 Supabase auth + teams
-- 📅 Analytics dashboard
-
-## 📄 License
+## Licencia
 
 MIT
 
-## 👤 Author
+## Autor
 
-Built with ❤️ by Alan Telo
+Construido por Alan Telo
 
 ---
 
-**Quick links**: [Issues](https://github.com/alantelo/interview-ninja/issues) | [Discussions](https://github.com/alantelo/interview-ninja/discussions)
+Links: Problemas | Discusiones
