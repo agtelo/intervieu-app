@@ -21,8 +21,13 @@ export function SimulacroTab({
   const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [totalQuestions] = useState(8); // Preguntas esperadas en el simulacro
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Contar preguntas del entrevistador (excluyendo el saludo inicial)
+  const assistantMessages = messages.filter(m => m.role === "assistant").length;
+  const questionNumber = Math.max(1, assistantMessages);
 
   // Initial greeting message
   useEffect(() => {
@@ -43,6 +48,14 @@ export function SimulacroTab({
       textarea.style.height = Math.min(textarea.scrollHeight, 140) + "px";
     }
   }, [input]);
+
+  // Placeholder dinámico según contexto
+  const getPlaceholder = () => {
+    if (messages.length === 1) return "Cuéntame sobre tu experiencia más relevante...";
+    if (questionNumber % 3 === 0) return "¿Hay algo más que quieras agregar?";
+    if (questionNumber % 2 === 0) return "¿Cómo se relaciona esto con el rol?";
+    return "Tu respuesta aquí...";
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -128,15 +141,23 @@ export function SimulacroTab({
 
       {/* Header - Fixed */}
       <div className="flex-shrink-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:py-8 border-b border-teal/20 bg-gradient-to-r from-surface/80 via-surface/60 to-teal/5 backdrop-blur-sm">
-        <div className="flex items-end gap-3 sm:gap-4 mb-3 sm:mb-4">
-          <Mic2 className="w-8 sm:w-10 h-8 sm:h-10 text-teal flex-shrink-0" />
-          <div className="min-w-0">
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-text leading-tight">
-              Simulacro en Vivo
-            </h1>
-            <p className="text-xs text-text-muted font-mono uppercase tracking-widest mt-1 sm:mt-2 truncate">
-              {briefing.empresa.nombre}
+        <div className="flex items-end justify-between gap-3 sm:gap-4 mb-3 sm:mb-4">
+          <div className="flex items-end gap-3 sm:gap-4 min-w-0">
+            <Mic2 className="w-8 sm:w-10 h-8 sm:h-10 text-teal flex-shrink-0" />
+            <div className="min-w-0">
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-text leading-tight">
+                Simulacro en Vivo
+              </h1>
+              <p className="text-xs text-text-muted font-mono uppercase tracking-widest mt-1 sm:mt-2 truncate">
+                {briefing.empresa.nombre}
+              </p>
+            </div>
+          </div>
+          <div className="flex-shrink-0 text-right">
+            <p className="text-xs font-mono font-semibold text-teal tracking-widest">
+              {questionNumber}/{totalQuestions}
             </p>
+            <p className="text-xs text-text-muted font-light">Preguntas</p>
           </div>
         </div>
         <p className="text-xs sm:text-sm text-text-muted leading-relaxed font-light">
@@ -147,7 +168,7 @@ export function SimulacroTab({
       {/* Messages - Scrollable with styled scrollbar */}
       <div className="flex-1 overflow-y-auto p-3 sm:p-5 lg:p-8 space-y-3 sm:space-y-4 messages-scroll">
         {messages.map((msg, idx) => (
-          <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} animate-fade-in w-full gap-2`}>
+          <div key={idx} className={`flex ${msg.role === "assistant" ? "justify-start" : "justify-end"} w-full gap-2 animate-message-in`}>
             {msg.role === "assistant" && (
               <div className="flex-shrink-0 w-5 h-5 rounded-full bg-teal/30 flex items-center justify-center mt-1">
                 <div className="w-2 h-2 rounded-full bg-teal" />
@@ -156,9 +177,9 @@ export function SimulacroTab({
             <article
               role="article"
               aria-label={msg.role === "assistant" ? "Respuesta del entrevistador" : "Tu respuesta"}
-              className={`w-full max-w-full sm:max-w-lg lg:max-w-2xl px-4 sm:px-6 py-3 rounded-xl transition-all duration-300 ${
+              className={`max-w-sm sm:max-w-md lg:max-w-2xl px-4 sm:px-6 py-3 rounded-xl transition-all duration-300 ${
                 msg.role === "assistant"
-                  ? "bg-surface border border-teal/15 text-text shadow-sm shadow-teal/5"
+                  ? "bg-surface border-l-4 border-l-teal border border-teal/15 text-text shadow-sm shadow-teal/5"
                   : "bg-gradient-to-r from-teal to-teal/90 text-white shadow-md shadow-teal/20"
               }`}
             >
@@ -176,15 +197,15 @@ export function SimulacroTab({
 
         {loading && (
           <div
-            className="flex justify-start w-full gap-2"
+            className="flex justify-start w-full gap-2 animate-message-in"
             role="status"
             aria-live="polite"
-            aria-label="Esperando respuesta del entrevistador"
+            aria-label="Entrevistador está escribiendo"
           >
             <div className="flex-shrink-0 w-5 h-5 rounded-full bg-teal/30 flex items-center justify-center mt-1">
               <div className="w-2 h-2 rounded-full bg-teal" />
             </div>
-            <div className="bg-surface border border-teal/15 px-4 py-3 rounded-xl shadow-sm shadow-teal/5">
+            <div className="bg-surface border-l-4 border-l-teal border border-teal/15 px-4 py-3 rounded-xl shadow-sm shadow-teal/5 flex items-center gap-2">
               <div className="flex gap-1.5 items-center">
                 <div className="w-1.5 h-1.5 rounded-full bg-teal animate-pulse" />
                 <div
@@ -196,6 +217,7 @@ export function SimulacroTab({
                   style={{ animationDelay: "0.4s" }}
                 />
               </div>
+              <p className="text-xs text-text-muted font-light ml-1">Pensando...</p>
             </div>
           </div>
         )}
@@ -220,7 +242,7 @@ export function SimulacroTab({
                     handleSubmit(e as unknown as React.FormEvent);
                   }
                 }}
-                placeholder="Tu respuesta aquí..."
+                placeholder={getPlaceholder()}
                 disabled={loading}
                 aria-label="Campo de respuesta para el entrevistador"
                 className="max-h-10 resize-none font-light text-sm leading-none px-3 py-2 bg-surface border border-border rounded-lg"
@@ -255,8 +277,23 @@ export function SimulacroTab({
           }
         }
 
+        @keyframes messageSlideIn {
+          from {
+            opacity: 0;
+            transform: translateY(12px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
         .animate-fade-in {
           animation: fadeInUp 0.6s ease-out forwards;
+        }
+
+        .animate-message-in {
+          animation: messageSlideIn 0.4s ease-out forwards;
         }
 
         /* Styled scrollbar for messages */
