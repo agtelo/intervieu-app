@@ -15,6 +15,8 @@
     "@prisma/client": "^7.7.0",
     "@types/cheerio": "^0.22.35",
     "@types/pdf-parse": "^1.1.5",
+    "@vercel/analytics": "^2.0.1",
+    "@vercel/speed-insights": "^2.0.0",
     "cheerio": "^1.2.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
