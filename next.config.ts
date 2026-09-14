@@ -1,17 +1,9 @@
 import type { NextConfig } from "next";
-import { resolve } from "path";
-
-let dbUrl = process.env.DATABASE_URL;
-
-if (!dbUrl) {
-  const dbPath = resolve(process.cwd(), "prisma/dev.db");
-  dbUrl = `file:${dbPath}`;
-}
 
 const nextConfig: NextConfig = {
-  env: {
-    DATABASE_URL: dbUrl,
-  },
+  // pdfjs-dist's ESM build breaks when webpack bundles it for the server
+  // ("Object.defineProperty called on non-object"); load it via require() instead.
+  serverExternalPackages: ["pdfjs-dist", "pdf-parse"],
 };
 
 export default nextConfig;
