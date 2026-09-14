@@ -17,8 +17,7 @@ Analiza tu perfil contra una oportunidad laboral y te prepara con:
 - **Framework**: Next.js 16 (App Router) + TypeScript estricto
 - **UI**: Tailwind CSS 4 + shadcn/ui (tema oscuro)
 - **IA**: Groq API (modelo llama-3.3-70b-versatile)
-- **BD**: PostgreSQL + Supabase (cliente postgres)
-- **ORM**: Prisma 7
+- **BD**: PostgreSQL + Supabase (cliente postgres, sin ORM)
 - **Autenticación**: Clerk
 - **Scraping**: cheerio + fetch nativa
 - **PDF**: pdf-parse
@@ -57,14 +56,7 @@ NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
 ```
 
-3. Configurar base de datos
-
-```bash
-npx prisma generate
-npx prisma migrate dev
-```
-
-4. Ejecutar servidor de desarrollo
+3. Ejecutar servidor de desarrollo
 
 ```bash
 npm run dev
@@ -199,11 +191,7 @@ NODE_ENV=development
 
 ### Base de Datos
 
-Usa PostgreSQL con Prisma. Para cambiar a otra BD:
-
-1. Actualizar datasource en prisma/schema.prisma
-2. Ejecutar npx prisma migrate deploy
-3. Actualizar DATABASE_URL en .env.local
+Usa PostgreSQL (Supabase) accedido directamente con el cliente `postgres` en [src/lib/db.ts](src/lib/db.ts), sin ORM. Para cambiar de BD, actualizar DATABASE_URL en .env.local y las queries en `src/lib/db.ts`.
 
 ## Scripts
 
@@ -230,7 +218,6 @@ npm run lint           Ejecutar ESLint
 
 **Error conexion BD**
 - Verifica DATABASE_URL apunte a PostgreSQL valida
-- Ejecuta npx prisma migrate dev para inicializar
 
 ## Hoja de Ruta
 
