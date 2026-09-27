@@ -1,4 +1,4 @@
-import { streamGroq } from "@/lib/groq";
+import { streamAnthropic } from "@/lib/anthropic";
 
 export async function POST(req: Request) {
   try {
@@ -28,8 +28,8 @@ export async function POST(req: Request) {
         let isClosed = false;
 
         try {
-          // Use streaming from Groq
-          const response = streamGroq(fullPrompt, systemPrompt);
+          // Use streaming from Anthropic
+          const response = streamAnthropic(fullPrompt, systemPrompt);
 
           for await (const chunk of response) {
             if (isClosed) break;

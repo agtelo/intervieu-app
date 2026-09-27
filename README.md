@@ -16,7 +16,7 @@ Analiza tu perfil contra una oportunidad laboral y te prepara con:
 
 - **Framework**: Next.js 16 (App Router) + TypeScript estricto
 - **UI**: Tailwind CSS 4 + shadcn/ui (tema oscuro)
-- **IA**: Groq API (modelo llama-3.3-70b-versatile)
+- **IA**: Anthropic Claude API (modelo claude-haiku-4-5)
 - **BD**: PostgreSQL + Supabase (cliente postgres, sin ORM)
 - **Autenticación**: Clerk
 - **Scraping**: cheerio + fetch nativa
@@ -28,7 +28,7 @@ Analiza tu perfil contra una oportunidad laboral y te prepara con:
 ## Requisitos Previos
 
 - Node.js 18+
-- GROQ_API_KEY de https://console.groq.com
+- ANTHROPIC_API_KEY de https://console.anthropic.com
 - DATABASE_URL de Supabase PostgreSQL
 
 ## Inicio Rapido
@@ -50,7 +50,7 @@ cp .env.example .env.local
 Agregar en .env.local:
 
 ```
-GROQ_API_KEY=gsk_...
+ANTHROPIC_API_KEY=sk-ant-...
 DATABASE_URL=postgresql://user:password@host:5432/db
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...
@@ -91,7 +91,7 @@ app/
 lib/
 ├── types.ts                        Interfaces TypeScript
 ├── prompts.ts                      Prompts del sistema
-├── groq.ts                         Cliente Groq
+├── anthropic.ts                    Cliente Anthropic
 ├── supabase.ts                     Cliente Supabase
 ├── db.ts                           Conexion PostgreSQL
 ├── scraper.ts                      Logica de raspado
@@ -125,7 +125,7 @@ Valida en cliente, envia a crear sesion.
 Ejecuta en secuencia con indicador de progreso:
 1. Parsear CV - extraer texto
 2. Raspar empresa - homepage, /about, /pricing
-3. Buscar entrevistador - Groq + busqueda web
+3. Buscar entrevistador - Claude + busqueda web
 4. Generar briefing - compilar inteligencia en JSON
 5. Guardar en BD - redirigir a dashboard
 
@@ -182,7 +182,7 @@ Responsive:
 Crear .env.local:
 
 ```
-GROQ_API_KEY=gsk_...
+ANTHROPIC_API_KEY=sk-ant-...
 DATABASE_URL=postgresql://user:password@host/db
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
 CLERK_SECRET_KEY=sk_test_...

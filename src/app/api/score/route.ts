@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { callGroq } from "@/lib/groq";
+import { callAnthropic } from "@/lib/anthropic";
 import { buildScorePrompt } from "@/lib/prompts";
 
 export async function POST(req: Request) {
@@ -15,10 +15,10 @@ export async function POST(req: Request) {
     }
 
     const prompt = buildScorePrompt(messages, jdText);
-    const text = await callGroq(prompt);
+    const text = await callAnthropic(prompt);
 
     if (!text) {
-      throw new Error("No text response from Grok");
+      throw new Error("No text response from Anthropic");
     }
 
     const score = JSON.parse(text);

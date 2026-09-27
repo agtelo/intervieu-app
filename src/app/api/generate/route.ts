@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { callGroq } from "@/lib/groq";
+import { callAnthropic } from "@/lib/anthropic";
 import { sql } from "@/lib/supabase";
 import { buildBriefingPrompt } from "@/lib/prompts";
 
@@ -42,10 +42,10 @@ export async function POST(req: Request) {
       session.interviewerData || undefined
     );
 
-    const text = await callGroq(prompt);
+    const text = await callAnthropic(prompt);
 
     if (!text) {
-      throw new Error("No text response from Claude");
+      throw new Error("No text response from Anthropic");
     }
 
     // Parse and validate JSON

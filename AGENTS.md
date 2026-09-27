@@ -6,7 +6,7 @@ App Next.js 14 de preparación de entrevistas laborales con IA. El usuario sube 
 ## Stack obligatorio
 - **Framework**: Next.js 14 (App Router), TypeScript estricto
 - **Estilos**: Tailwind CSS + shadcn/ui (dark theme)
-- **IA**: Groq API (`llama-3.3-70b-versatile`) via `groq-sdk` + `@ai-sdk/groq`
+- **IA**: Anthropic API (`claude-haiku-4-5`) via `@anthropic-ai/sdk`
 - **PDF**: `pdf-parse` para extraer texto de CVs y JDs
 - **DB**: Prisma + SQLite (dev), migrable a Postgres/Supabase
 - **Estado**: Zustand para estado de sesión

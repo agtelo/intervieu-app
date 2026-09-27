@@ -1,4 +1,4 @@
-import { callGroq } from "./groq";
+import { callAnthropic } from "./anthropic";
 import { buildPersonSearchPrompt } from "./prompts";
 
 export async function searchPerson(params: {
@@ -14,7 +14,7 @@ export async function searchPerson(params: {
   }
 
   const prompt = buildPersonSearchPrompt(email, linkedin, company, role);
-  const response = await callGroq(prompt);
+  const response = await callAnthropic(prompt);
 
   return response;
 }
