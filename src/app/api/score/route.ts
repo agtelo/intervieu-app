@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { callAnthropic } from "@/lib/anthropic";
 import { buildScorePrompt } from "@/lib/prompts";
+import { stripJsonFences } from "@/lib/utils";
 
 export async function POST(req: Request) {
   try {
@@ -21,7 +22,7 @@ export async function POST(req: Request) {
       throw new Error("No text response from Anthropic");
     }
 
-    const score = JSON.parse(text);
+    const score = JSON.parse(stripJsonFences(text));
     return NextResponse.json({ data: score, error: null });
   } catch (err) {
     console.error("Error scoring:", err);

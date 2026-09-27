@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { callAnthropic } from "@/lib/anthropic";
 import { sql } from "@/lib/supabase";
 import { buildBriefingPrompt } from "@/lib/prompts";
+import { stripJsonFences } from "@/lib/utils";
 
 export async function POST(req: Request) {
   try {
@@ -49,7 +50,7 @@ export async function POST(req: Request) {
     }
 
     // Parse and validate JSON
-    const briefing = JSON.parse(text);
+    const briefing = JSON.parse(stripJsonFences(text));
 
     // Update session
     await sql`
